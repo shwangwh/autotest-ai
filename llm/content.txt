@@ -1,0 +1,1181 @@
+请根据以下接口文档，为每个有效的接口生成单独的测试点。
+
+**注意：只有形如 "1.1 用户登录"、"2.2 获取所有项目" 这样的标题才是有效的接口测试点，其他标题（如数据模型定义）不需要处理。**
+
+---
+
+# 智能测试平台 - 系统接口文档
+
+## 文档信息
+
+| 项目 | 说明 |
+|------|------|
+| 项目名称 | 智能测试平台 |
+| 技术栈 | Spring Boot 3.2.0 + Vue 3 |
+| 基础路径 | `/api` |
+| 数据格式 | JSON |
+| 认证方式 | Basic Auth |
+| 文档版本 | v1.0 |
+| 更新日期 | 2026-04-19 |
+
+---
+
+## 全局说明
+
+### 响应通用结构
+
+大多数接口返回统一的响应格式：
+
+```json
+{
+  "success": true,
+  "message": "操作成功",
+  "data": {}
+}
+```
+
+### 认证说明
+
+- 登录接口返回 `authorization` 字段，格式为 `Basic Base64(username:password)`
+- 需要认证的接口需在请求头中添加 `Authorization` 字段
+
+```
+Authorization: Basic eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+```
+
+### 分页参数
+
+部分列表接口支持分页查询：
+
+| 参数名 | 类型 | 必填 | 说明 | 默认值 |
+|--------|------|------|------|--------|
+| page | Integer | 否 | 页码 | 1 |
+| size | Integer | 否 | 每页条数 | 10 |
+
+---
+
+## 一、认证模块 (Auth)
+
+**基础路径**: `/api/auth`
+
+### 1.1 用户登录
+
+**接口说明**: 用户登录获取认证令牌
+
+| 项目 | 说明 |
+|------|------|
+| 接口名称 | 用户登录 |
+| 请求方式 | POST |
+| 请求路径 | `/api/auth/login` |
+| Content-Type | `application/json` |
+| 是否需要认证 | 否 |
+
+#### 请求参数
+
+| 参数名 | 类型 | 必填 | 说明 |
+|--------|------|------|------|
+| username | String | 是 | 用户账号 |
+| password | String | 是 | 用户密码 |
+
+#### 请求示例
+
+```json
+{
+  "username": "admin",
+  "password": "123456"
+}
+```
+
+#### 成功响应
+
+| 参数名 | 类型 | 说明 |
+|--------|------|------|
+| success | Boolean | 登录是否成功 |
+| message | String | 响应消息 |
+| authorization | String | Basic认证令牌 |
+| username | String | 用户名 |
+
+#### 成功响应示例
+
+```json
+{
+  "success": true,
+  "message": "Login successful.",
+  "authorization": "Basic YWRtaW46MTIzNDU2",
+  "username": "admin"
+}
+```
+
+#### 失败响应示例
+
+```json
+{
+  "success": false,
+  "message": "Invalid username or password."
+}
+```
+
+---
+
+## 二、项目管理模块 (Project)
+
+**基础路径**: `/api/projects`
+
+### 2.1 项目实体 (Project)
+
+| 字段名 | 类型 | 必填 | 说明 |
+|--------|------|------|------|
+| id | Long | 否 | 项目ID（自动生成） |
+| name | String | 是 | 项目名称 |
+| description | String | 否 | 项目描述 |
+| owner | String | 否 | 项目负责人，默认 `admin` |
+| status | String | 否 | 项目状态，默认 `ACTIVE` |
+| reviewStatus | String | 否 | 评审状态，默认 `UNREVIEWED` |
+| projectCode | String | 否 | 项目编码（自动生成） |
+| createdAt | LocalDateTime | 否 | 创建时间 |
+| updatedAt | LocalDateTime | 否 | 更新时间 |
+
+#### 状态枚举值
+
+| 状态值 | 说明 |
+|--------|------|
+| ACTIVE | 进行中 |
+| ARCHIVED | 已归档 |
+
+#### 评审状态枚举值
+
+| 状态值 | 说明 |
+|--------|------|
+| UNREVIEWED | 未评审 |
+| REVIEWED | 已评审 |
+
+---
+
+### 2.2 获取所有项目
+
+**接口说明**: 获取项目列表
+
+| 项目 | 说明 |
+|------|------|
+| 请求方式 | GET |
+| 请求路径 | `/api/projects` |
+| 是否需要认证 | 是 |
+
+#### 请求参数
+
+无
+
+#### 响应参数
+
+返回 `List<ProjectSummary>` 数组
+
+| 参数名 | 类型 | 说明 |
+|--------|------|------|
+| id | Long | 项目ID |
+| name | String | 项目名称 |
+| description | String | 项目描述 |
+| owner | String | 项目负责人 |
+| status | String | 项目状态 |
+| projectCode | String | 项目编码 |
+
+#### 响应示例
+
+```json
+[
+  {
+    "id": 1,
+    "name": "示例项目",
+    "description": "这是一个示例项目",
+    "owner": "admin",
+    "status": "ACTIVE",
+    "projectCode": "PROJ-1718841600000"
+  }
+]
+```
+
+---
+
+### 2.3 获取项目详情
+
+**接口说明**: 根据ID获取项目详细信息
+
+| 项目 | 说明 |
+|------|------|
+| 请求方式 | GET |
+| 请求路径 | `/api/projects/{id}` |
+| 是否需要认证 | 是 |
+
+#### 路径参数
+
+| 参数名 | 类型 | 必填 | 说明 |
+|--------|------|------|------|
+| id | Long | 是 | 项目ID |
+
+#### 响应参数
+
+返回 `Project` 对象，包含所有项目字段。
+
+---
+
+### 2.4 创建项目
+
+**接口说明**: 创建新项目
+
+| 项目 | 说明 |
+|------|------|
+| 请求方式 | POST |
+| 请求路径 | `/api/projects` |
+| Content-Type | `application/json` |
+| 是否需要认证 | 是 |
+
+#### 请求体
+
+| 参数名 | 类型 | 必填 | 说明 |
+|--------|------|------|------|
+| name | String | 是 | 项目名称 |
+| description | String | 否 | 项目描述 |
+| owner | String | 否 | 项目负责人 |
+
+#### 请求示例
+
+```json
+{
+  "name": "新项目",
+  "description": "项目描述",
+  "owner": "admin"
+}
+```
+
+#### 响应参数
+
+返回创建的 `Project` 对象。
+
+---
+
+### 2.5 更新项目
+
+**接口说明**: 更新项目信息
+
+| 项目 | 说明 |
+|------|------|
+| 请求方式 | PUT |
+| 请求路径 | `/api/projects/{id}` |
+| Content-Type | `application/json` |
+| 是否需要认证 | 是 |
+
+#### 路径参数
+
+| 参数名 | 类型 | 必填 | 说明 |
+|--------|------|------|------|
+| id | Long | 是 | 项目ID |
+
+#### 请求体
+
+同创建项目，传递需要更新的字段。
+
+#### 响应参数
+
+返回更新后的 `Project` 对象。
+
+---
+
+### 2.6 删除项目
+
+**接口说明**: 删除指定项目
+
+| 项目 | 说明 |
+|------|------|
+| 请求方式 | DELETE |
+| 请求路径 | `/api/projects/{id}` |
+| 是否需要认证 | 是 |
+
+#### 路径参数
+
+| 参数名 | 类型 | 必填 | 说明 |
+|--------|------|------|------|
+| id | Long | 是 | 项目ID |
+
+#### 响应
+
+无响应体，HTTP 200 表示删除成功。
+
+---
+
+## 三、需求管理模块 (Requirement)
+
+**基础路径**: `/api/requirements`
+
+### 3.1 需求实体 (Requirement)
+
+| 字段名 | 类型 | 必填 | 说明 |
+|--------|------|------|------|
+| id | Long | 否 | 需求ID（自动生成） |
+| projectId | Long | 是 | 所属项目ID |
+| name | String | 是 | 需求名称 |
+| fileUrl | String | 否 | 需求文件URL |
+| version | String | 否 | 版本号，默认 `v1.0` |
+| status | String | 否 | 状态，默认 `PENDING_ANALYSIS` |
+| testPointCount | Integer | 否 | 测试点数量，默认 `0` |
+| owner | String | 否 | 负责人，默认 `admin` |
+| createdAt | LocalDateTime | 否 | 创建时间 |
+| updatedAt | LocalDateTime | 否 | 更新时间 |
+
+#### 状态枚举值
+
+| 状态值 | 说明 |
+|--------|------|
+| PENDING_ANALYSIS | 待分析 |
+| ANALYZING | 分析中 |
+| ANALYZED | 已分析 |
+| CONFIRMED | 已确认 |
+
+---
+
+### 3.2 获取所有需求
+
+**接口说明**: 获取所有需求列表
+
+| 项目 | 说明 |
+|------|------|
+| 请求方式 | GET |
+| 请求路径 | `/api/requirements` |
+| 是否需要认证 | 是 |
+
+#### 响应参数
+
+返回 `List<Requirement>` 数组。
+
+---
+
+### 3.3 按项目获取需求
+
+**接口说明**: 获取指定项目下的所有需求
+
+| 项目 | 说明 |
+|------|------|
+| 请求方式 | GET |
+| 请求路径 | `/api/requirements/project/{projectId}` |
+| 是否需要认证 | 是 |
+
+#### 路径参数
+
+| 参数名 | 类型 | 必填 | 说明 |
+|--------|------|------|------|
+| projectId | Long | 是 | 项目ID |
+
+#### 响应参数
+
+返回 `List<Requirement>` 数组。
+
+---
+
+### 3.4 获取需求详情
+
+**接口说明**: 根据ID获取需求详细信息
+
+| 项目 | 说明 |
+|------|------|
+| 请求方式 | GET |
+| 请求路径 | `/api/requirements/{id}` |
+| 是否需要认证 | 是 |
+
+#### 路径参数
+
+| 参数名 | 类型 | 必填 | 说明 |
+|--------|------|------|------|
+| id | Long | 是 | 需求ID |
+
+#### 响应参数
+
+返回 `Requirement` 对象。
+
+---
+
+### 3.5 上传需求文件
+
+**接口说明**: 上传需求文档文件
+
+| 项目 | 说明 |
+|------|------|
+| 请求方式 | POST |
+| 请求路径 | `/api/requirements/upload` |
+| Content-Type | `multipart/form-data` |
+| 是否需要认证 | 是 |
+
+#### 请求参数
+
+| 参数名 | 类型 | 必填 | 说明 |
+|--------|------|------|------|
+| projectId | Long | 是 | 项目ID（Query参数） |
+| file | MultipartFile | 是 | 需求文件 |
+| name | String | 是 | 需求名称（Query参数） |
+| version | String | 是 | 版本号（Query参数） |
+
+#### 响应参数
+
+返回创建的 `Requirement` 对象。
+
+---
+
+### 3.6 生成测试点
+
+**接口说明**: 根据需求自动生成测试点（AI分析）
+
+| 项目 | 说明 |
+|------|------|
+| 请求方式 | POST |
+| 请求路径 | `/api/requirements/{id}/generate-test-points` |
+| 是否需要认证 | 是 |
+
+#### 路径参数
+
+| 参数名 | 类型 | 必填 | 说明 |
+|--------|------|------|------|
+| id | Long | 是 | 需求ID |
+
+#### 响应参数
+
+返回 `List<TestPoint>` 数组。
+
+---
+
+### 3.7 确认测试点
+
+**接口说明**: 确认需求关联的测试点
+
+| 项目 | 说明 |
+|------|------|
+| 请求方式 | POST |
+| 请求路径 | `/api/requirements/{id}/confirm-test-points` |
+| 是否需要认证 | 是 |
+
+#### 路径参数
+
+| 参数名 | 类型 | 必填 | 说明 |
+|--------|------|------|------|
+| id | Long | 是 | 需求ID |
+
+#### 响应
+
+无响应体，HTTP 200 表示确认成功。
+
+---
+
+## 四、测试点管理模块 (TestPoint)
+
+**基础路径**: `/api/test-points`
+
+### 4.1 测试点实体 (TestPoint)
+
+| 字段名 | 类型 | 必填 | 说明 |
+|--------|------|------|------|
+| id | Long | 否 | 测试点ID（自动生成） |
+| projectId | Long | 是 | 所属项目ID |
+| requirementId | Long | 是 | 所属需求ID |
+| requirementItemId | Long | 否 | 需求项ID |
+| pointCode | String | 否 | 测试点编码 |
+| pointName | String | 是 | 测试点名称 |
+| pointType | String | 否 | 测试点类型 |
+| name | String | 否 | 名称 |
+| function | String | 否 | 功能描述 |
+| sceneType | String | 否 | 场景类型 |
+| riskLevel | String | 否 | 风险等级 |
+| businessRule | String | 否 | 业务规则 |
+| description | String | 否 | 描述 |
+| automationSuggested | Boolean | 否 | 是否建议自动化，默认 `false` |
+| createdAt | LocalDateTime | 否 | 创建时间 |
+| createdBy | Long | 否 | 创建人ID |
+
+---
+
+### 4.2 获取所有测试点
+
+**接口说明**: 获取所有测试点列表
+
+| 项目 | 说明 |
+|------|------|
+| 请求方式 | GET |
+| 请求路径 | `/api/test-points` |
+| 是否需要认证 | 是 |
+
+#### 响应参数
+
+返回 `List<TestPoint>` 数组。
+
+---
+
+### 4.3 按需求获取测试点
+
+**接口说明**: 获取指定需求下的所有测试点
+
+| 项目 | 说明 |
+|------|------|
+| 请求方式 | GET |
+| 请求路径 | `/api/test-points/requirement/{requirementId}` |
+| 是否需要认证 | 是 |
+
+#### 路径参数
+
+| 参数名 | 类型 | 必填 | 说明 |
+|--------|------|------|------|
+| requirementId | Long | 是 | 需求ID |
+
+#### 响应参数
+
+返回 `List<TestPoint>` 数组。
+
+---
+
+### 4.4 按项目获取测试点
+
+**接口说明**: 获取指定项目下的所有测试点
+
+| 项目 | 说明 |
+|------|------|
+| 请求方式 | GET |
+| 请求路径 | `/api/test-points/project/{projectId}` |
+| 是否需要认证 | 是 |
+
+#### 路径参数
+
+| 参数名 | 类型 | 必填 | 说明 |
+|--------|------|------|------|
+| projectId | Long | 是 | 项目ID |
+
+#### 响应参数
+
+返回 `List<TestPoint>` 数组。
+
+---
+
+### 4.5 创建测试点
+
+**接口说明**: 创建新的测试点
+
+| 项目 | 说明 |
+|------|------|
+| 请求方式 | POST |
+| 请求路径 | `/api/test-points` |
+| Content-Type | `application/json` |
+| 是否需要认证 | 是 |
+
+#### 请求体
+
+| 参数名 | 类型 | 必填 | 说明 |
+|--------|------|------|------|
+| projectId | Long | 是 | 所属项目ID |
+| requirementId | Long | 是 | 所属需求ID |
+| pointName | String | 是 | 测试点名称 |
+| pointType | String | 否 | 测试点类型 |
+| function | String | 否 | 功能描述 |
+| sceneType | String | 否 | 场景类型 |
+| riskLevel | String | 否 | 风险等级 |
+| businessRule | String | 否 | 业务规则 |
+| description | String | 否 | 描述 |
+| automationSuggested | Boolean | 否 | 是否建议自动化 |
+
+#### 响应参数
+
+返回创建的 `TestPoint` 对象。
+
+---
+
+### 4.6 更新测试点
+
+**接口说明**: 更新测试点信息
+
+| 项目 | 说明 |
+|------|------|
+| 请求方式 | PUT |
+| 请求路径 | `/api/test-points/{id}` |
+| Content-Type | `application/json` |
+| 是否需要认证 | 是 |
+
+#### 路径参数
+
+| 参数名 | 类型 | 必填 | 说明 |
+|--------|------|------|------|
+| id | Long | 是 | 测试点ID |
+
+#### 请求体
+
+传递需要更新的字段。
+
+#### 响应参数
+
+返回更新后的 `TestPoint` 对象。
+
+---
+
+### 4.7 删除测试点
+
+**接口说明**: 删除指定测试点
+
+| 项目 | 说明 |
+|------|------|
+| 请求方式 | DELETE |
+| 请求路径 | `/api/test-points/{id}` |
+| 是否需要认证 | 是 |
+
+#### 路径参数
+
+| 参数名 | 类型 | 必填 | 说明 |
+|--------|------|------|------|
+| id | Long | 是 | 测试点ID |
+
+#### 响应
+
+无响应体，HTTP 200 表示删除成功。
+
+---
+
+## 五、测试用例管理模块 (TestCase)
+
+**基础路径**: `/api/test-cases`
+
+### 5.1 测试用例实体 (TestCase)
+
+| 字段名 | 类型 | 必填 | 说明 |
+|--------|------|------|------|
+| id | Long | 否 | 用例ID（自动生成） |
+| projectId | Long | 是 | 所属项目ID |
+| testPointId | Long | 是 | 所属测试点ID |
+| caseType | String | 否 | 用例类型，默认 `FUNCTIONAL` |
+| caseNumber | String | 否 | 用例编号 |
+| caseCode | String | 否 | 用例编码 |
+| title | String | 是 | 用例标题 |
+| precondition | String | 否 | 前置条件 |
+| steps | String | 否 | 测试步骤 |
+| expectedResult | String | 否 | 预期结果 |
+| priority | String | 否 | 优先级，默认 `MEDIUM` |
+| automation | Boolean | 否 | 是否自动化，默认 `false` |
+| status | String | 否 | 状态，默认 `PENDING_REVIEW` |
+| creator | String | 否 | 创建人，默认 `admin` |
+| createdBy | Long | 否 | 创建人ID |
+| createdAt | LocalDateTime | 否 | 创建时间 |
+| updatedAt | LocalDateTime | 否 | 更新时间 |
+
+#### 用例类型枚举值
+
+| 状态值 | 说明 |
+|--------|------|
+| FUNCTIONAL | 功能测试 |
+| API | 接口测试 |
+| UI | 界面测试 |
+| PERFORMANCE | 性能测试 |
+
+#### 优先级枚举值
+
+| 状态值 | 说明 |
+|--------|------|
+| HIGH | 高 |
+| MEDIUM | 中 |
+| LOW | 低 |
+
+#### 状态枚举值
+
+| 状态值 | 说明 |
+|--------|------|
+| PENDING_REVIEW | 待评审 |
+| REVIEWED | 已评审 |
+| APPROVED | 已批准 |
+| REJECTED | 已驳回 |
+
+---
+
+### 5.2 获取所有测试用例
+
+**接口说明**: 获取所有测试用例列表
+
+| 项目 | 说明 |
+|------|------|
+| 请求方式 | GET |
+| 请求路径 | `/api/test-cases` |
+| 是否需要认证 | 是 |
+
+#### 响应参数
+
+返回 `List<TestCase>` 数组。
+
+---
+
+### 5.3 按项目获取测试用例
+
+**接口说明**: 获取指定项目下的所有测试用例
+
+| 项目 | 说明 |
+|------|------|
+| 请求方式 | GET |
+| 请求路径 | `/api/test-cases/project/{projectId}` |
+| 是否需要认证 | 是 |
+
+#### 路径参数
+
+| 参数名 | 类型 | 必填 | 说明 |
+|--------|------|------|------|
+| projectId | Long | 是 | 项目ID |
+
+#### 响应参数
+
+返回 `List<TestCase>` 数组。
+
+---
+
+### 5.4 按测试点获取测试用例
+
+**接口说明**: 获取指定测试点下的所有测试用例
+
+| 项目 | 说明 |
+|------|------|
+| 请求方式 | GET |
+| 请求路径 | `/api/test-cases/test-point/{testPointId}` |
+| 是否需要认证 | 是 |
+
+#### 路径参数
+
+| 参数名 | 类型 | 必填 | 说明 |
+|--------|------|------|------|
+| testPointId | Long | 是 | 测试点ID |
+
+#### 响应参数
+
+返回 `List<TestCase>` 数组。
+
+---
+
+### 5.5 获取测试用例详情
+
+**接口说明**: 根据ID获取测试用例详细信息
+
+| 项目 | 说明 |
+|------|------|
+| 请求方式 | GET |
+| 请求路径 | `/api/test-cases/{id}` |
+| 是否需要认证 | 是 |
+
+#### 路径参数
+
+| 参数名 | 类型 | 必填 | 说明 |
+|--------|------|------|------|
+| id | Long | 是 | 用例ID |
+
+#### 响应参数
+
+返回 `TestCase` 对象。
+
+---
+
+### 5.6 生成测试用例（单个）
+
+**接口说明**: 根据测试点自动生成测试用例（AI生成）
+
+| 项目 | 说明 |
+|------|------|
+| 请求方式 | POST |
+| 请求路径 | `/api/test-cases/generate` |
+| 是否需要认证 | 是 |
+
+#### 请求参数（Query）
+
+| 参数名 | 类型 | 必填 | 说明 |
+|--------|------|------|------|
+| projectId | Long | 是 | 项目ID |
+| testPointId | Long | 是 | 测试点ID |
+
+#### 响应参数
+
+返回 `List<TestCase>` 数组。
+
+---
+
+### 5.7 批量生成测试用例
+
+**接口说明**: 根据多个测试点批量生成测试用例（AI生成）
+
+| 项目 | 说明 |
+|------|------|
+| 请求方式 | POST |
+| 请求路径 | `/api/test-cases/generate/batch` |
+| 是否需要认证 | 是 |
+
+#### 请求参数（Query）
+
+| 参数名 | 类型 | 必填 | 说明 |
+|--------|------|------|------|
+| projectId | Long | 是 | 项目ID |
+| testPointIds | List&lt;Long&gt; | 是 | 测试点ID列表 |
+
+#### 响应参数
+
+返回 `List<TestCase>` 数组。
+
+---
+
+### 5.8 创建测试用例
+
+**接口说明**: 手动创建测试用例
+
+| 项目 | 说明 |
+|------|------|
+| 请求方式 | POST |
+| 请求路径 | `/api/test-cases` |
+| Content-Type | `application/json` |
+| 是否需要认证 | 是 |
+
+#### 请求体
+
+| 参数名 | 类型 | 必填 | 说明 |
+|--------|------|------|------|
+| projectId | Long | 是 | 所属项目ID |
+| testPointId | Long | 是 | 所属测试点ID |
+| title | String | 是 | 用例标题 |
+| precondition | String | 否 | 前置条件 |
+| steps | String | 否 | 测试步骤 |
+| expectedResult | String | 否 | 预期结果 |
+| priority | String | 否 | 优先级 |
+| caseType | String | 否 | 用例类型 |
+| automation | Boolean | 否 | 是否自动化 |
+
+#### 响应参数
+
+返回创建的 `TestCase` 对象。
+
+---
+
+### 5.9 更新测试用例
+
+**接口说明**: 更新测试用例信息
+
+| 项目 | 说明 |
+|------|------|
+| 请求方式 | PUT |
+| 请求路径 | `/api/test-cases/{id}` |
+| Content-Type | `application/json` |
+| 是否需要认证 | 是 |
+
+#### 路径参数
+
+| 参数名 | 类型 | 必填 | 说明 |
+|--------|------|------|------|
+| id | Long | 是 | 用例ID |
+
+#### 请求体
+
+传递需要更新的字段。
+
+#### 响应参数
+
+返回更新后的 `TestCase` 对象。
+
+---
+
+### 5.10 删除测试用例
+
+**接口说明**: 删除指定测试用例
+
+| 项目 | 说明 |
+|------|------|
+| 请求方式 | DELETE |
+| 请求路径 | `/api/test-cases/{id}` |
+| 是否需要认证 | 是 |
+
+#### 路径参数
+
+| 参数名 | 类型 | 必填 | 说明 |
+|--------|------|------|------|
+| id | Long | 是 | 用例ID |
+
+#### 响应
+
+无响应体，HTTP 200 表示删除成功。
+
+---
+
+## 六、自动化执行模块 (Automation)
+
+**基础路径**: `/api/automation`
+
+### 6.1 执行任务实体 (ExecutionTask)
+
+| 字段名 | 类型 | 必填 | 说明 |
+|--------|------|------|------|
+| id | Long | 否 | 任务ID（自动生成） |
+| projectId | Long | 是 | 所属项目ID |
+| testCaseId | Long | 是 | 测试用例ID |
+| planId | Long | 否 | 计划ID |
+| taskNo | String | 否 | 任务编号（自动生成） |
+| taskType | String | 否 | 任务类型，默认 `API_TEST` |
+| runnerType | String | 否 | 执行器类型，默认 `LOCAL` |
+| environment | String | 是 | 执行环境 |
+| status | String | 否 | 状态，默认 `PENDING` |
+| createdAt | LocalDateTime | 否 | 创建时间 |
+| executedAt | LocalDateTime | 否 | 执行时间 |
+
+#### 任务状态枚举值
+
+| 状态值 | 说明 |
+|--------|------|
+| PENDING | 待执行 |
+| RUNNING | 执行中 |
+| COMPLETED | 已完成 |
+| FAILED | 执行失败 |
+
+---
+
+### 6.2 执行结果实体 (ExecutionResult)
+
+| 字段名 | 类型 | 必填 | 说明 |
+|--------|------|------|------|
+| id | Long | 否 | 结果ID（自动生成） |
+| taskId | Long | 是 | 关联任务ID |
+| requestUrl | String | 是 | 请求URL |
+| requestMethod | String | 是 | 请求方法 |
+| requestHeaders | String | 否 | 请求头 |
+| requestBody | String | 否 | 请求体 |
+| responseStatus | int | 是 | 响应状态码 |
+| responseBody | String | 是 | 响应体 |
+| assertionResult | String | 否 | 断言结果 |
+| llmAnalysis | String | 否 | AI分析结果 |
+| result | String | 是 | 执行结果 |
+| errorMessage | String | 否 | 错误信息 |
+| reportUrl | String | 否 | 报告URL |
+| executedAt | LocalDateTime | 否 | 执行时间 |
+
+---
+
+### 6.3 获取所有任务
+
+**接口说明**: 获取所有执行任务列表
+
+| 项目 | 说明 |
+|------|------|
+| 请求方式 | GET |
+| 请求路径 | `/api/automation/tasks` |
+| 是否需要认证 | 是 |
+
+#### 响应参数
+
+返回 `List<ExecutionTask>` 数组。
+
+---
+
+### 6.4 按项目获取任务
+
+**接口说明**: 获取指定项目下的所有执行任务
+
+| 项目 | 说明 |
+|------|------|
+| 请求方式 | GET |
+| 请求路径 | `/api/automation/tasks/project/{projectId}` |
+| 是否需要认证 | 是 |
+
+#### 路径参数
+
+| 参数名 | 类型 | 必填 | 说明 |
+|--------|------|------|------|
+| projectId | Long | 是 | 项目ID |
+
+#### 响应参数
+
+返回 `List<ExecutionTask>` 数组。
+
+---
+
+### 6.5 创建执行任务
+
+**接口说明**: 创建单个执行任务
+
+| 项目 | 说明 |
+|------|------|
+| 请求方式 | POST |
+| 请求路径 | `/api/automation/tasks` |
+| Content-Type | `application/json` |
+| 是否需要认证 | 是 |
+
+#### 请求体
+
+| 参数名 | 类型 | 必填 | 说明 |
+|--------|------|------|------|
+| projectId | Long | 是 | 项目ID |
+| testCaseId | Long | 是 | 测试用例ID |
+| environment | String | 是 | 执行环境 |
+
+#### 请求示例
+
+```json
+{
+  "projectId": 1,
+  "testCaseId": 10,
+  "environment": "dev"
+}
+```
+
+#### 响应参数
+
+返回创建的 `ExecutionTask` 对象。
+
+---
+
+### 6.6 批量创建执行任务
+
+**接口说明**: 批量创建执行任务
+
+| 项目 | 说明 |
+|------|------|
+| 请求方式 | POST |
+| 请求路径 | `/api/automation/tasks/batch` |
+| Content-Type | `application/json` |
+| 是否需要认证 | 是 |
+
+#### 请求体
+
+| 参数名 | 类型 | 必填 | 说明 |
+|--------|------|------|------|
+| projectId | Long | 是 | 项目ID |
+| testCaseIds | List&lt;Long&gt; | 是 | 测试用例ID列表 |
+| environment | String | 是 | 执行环境 |
+
+#### 请求示例
+
+```json
+{
+  "projectId": 1,
+  "testCaseIds": [10, 11, 12],
+  "environment": "dev"
+}
+```
+
+#### 响应参数
+
+返回 `List<ExecutionTask>` 数组。
+
+---
+
+### 6.7 执行任务
+
+**接口说明**: 执行单个任务
+
+| 项目 | 说明 |
+|------|------|
+| 请求方式 | POST |
+| 请求路径 | `/api/automation/tasks/{id}/execute` |
+| 是否需要认证 | 是 |
+
+#### 路径参数
+
+| 参数名 | 类型 | 必填 | 说明 |
+|--------|------|------|------|
+| id | Long | 是 | 任务ID |
+
+#### 响应参数
+
+返回 `ExecutionResult` 对象。
+
+---
+
+### 6.8 批量执行任务
+
+**接口说明**: 批量执行任务
+
+| 项目 | 说明 |
+|------|------|
+| 请求方式 | POST |
+| 请求路径 | `/api/automation/tasks/batch/execute` |
+| Content-Type | `application/json` |
+| 是否需要认证 | 是 |
+
+#### 请求体
+
+传递任务ID数组。
+
+```json
+[1, 2, 3]
+```
+
+#### 响应参数
+
+返回 `List<ExecutionResult>` 数组。
+
+---
+
+### 6.9 获取执行结果
+
+**接口说明**: 获取指定任务的执行结果
+
+| 项目 | 说明 |
+|------|------|
+| 请求方式 | GET |
+| 请求路径 | `/api/automation/results/{taskId}` |
+| 是否需要认证 | 是 |
+
+#### 路径参数
+
+| 参数名 | 类型 | 必填 | 说明 |
+|--------|------|------|------|
+| taskId | Long | 是 | 任务ID |
+
+#### 响应参数
+
+返回 `ExecutionResult` 对象。
+
+---
+
+### 6.10 重试任务
+
+**接口说明**: 重新执行失败的任务
+
+| 项目 | 说明 |
+|------|------|
+| 请求方式 | POST |
+| 请求路径 | `/api/automation/tasks/{id}/retry` |
+| 是否需要认证 | 是 |
+
+#### 路径参数
+
+| 参数名 | 类型 | 必填 | 说明 |
+|--------|------|------|------|
+| id | Long | 是 | 任务ID |
+
+#### 响应参数
+
+返回新的 `ExecutionTask` 对象。
+
+---
+
+### 6.11 生成Allure报告
+
+**接口说明**: 为指定任务生成Allure测试报告
+
+| 项目 | 说明 |
+|------|------|
+| 请求方式 | POST |
+| 请求路径 | `/api/automation/tasks/{id}/allure-report` |
+| 是否需要认证 | 是 |
+
+#### 路径参数
+
+| 参数名 | 类型 | 必填 | 说明 |
+|--------|------|------|------|
+| id | Long | 是 | 任务ID |
+
+#### 成功响应
+
+| 参数名 | 类型 | 说明 |
+|--------|------|------|
+| reportUrl | String | 报告访问URL |
+
+#### 成功响应示例
+
+```json
+{
+  "reportUrl": "http://localhost:8080/allure-reports/1/index.html"
+}
+```
+
+#### 失败响应示例
+
+```json
+{
+  "error": "报告生成失败的原因"
+}
+```

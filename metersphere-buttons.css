@@ -1,0 +1,1065 @@
+/* ============================================
+   MeterSphere Design System — 按钮页面完整复刻
+   ============================================ */
+
+/* === 1. CSS Custom Properties (设计令牌) === */
+:root {
+  /* Brand / Primary */
+  --ms-primary: #783887;
+  --ms-primary-light: #9B6EA5;
+  --ms-primary-dark: #5F2D6B;
+  --ms-primary-bg: #F3EDF5;
+  --ms-primary-bg-light: #E8D5EE;
+
+  /* Functional */
+  --ms-success: #00B42A;
+  --ms-success-bg: #E8FFEA;
+  --ms-warning: #FF7D00;
+  --ms-warning-bg: #FFF7E8;
+  --ms-danger: #F53F3F;
+  --ms-danger-light: #F76560;
+  --ms-danger-dark: #CB272D;
+  --ms-danger-bg: #FEE8E8;
+  --ms-danger-disabled-bg: #FBE2E2;
+  --ms-danger-disabled-text: #F9A8A8;
+  --ms-info: #165DFF;
+
+  /* Neutral / Grayscale */
+  --ms-text-1: #1D2129;    /* 标题 */
+  --ms-text-2: #4E5969;    /* 正文 */
+  --ms-text-3: #86909C;    /* 辅助 */
+  --ms-text-4: #C9CDD4;    /* 禁用 / placeholder */
+  --ms-border: #E5E6EB;
+  --ms-bg-1: #FFFFFF;
+  --ms-bg-2: #F7F8FA;
+  --ms-bg-3: #F2F3F5;
+  --ms-bg-4: #E5E6EB;
+  --ms-bg-5: #C9CDD4;
+  --ms-mask: rgba(0, 0, 0, 0.45);
+
+  /* Shadows */
+  --ms-shadow-card: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --ms-shadow-popup: 0 4px 10px rgba(0, 0, 0, 0.1);
+  --ms-shadow-modal: 0 8px 20px rgba(0, 0, 0, 0.15);
+  --ms-shadow-sidebar: 2px 0 8px rgba(0, 0, 0, 0.06);
+
+  /* Typography */
+  --ms-font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif;
+  --ms-font-size-xs: 12px;
+  --ms-font-size-sm: 13px;
+  --ms-font-size-md: 14px;
+  --ms-font-size-lg: 16px;
+  --ms-font-size-xl: 18px;
+  --ms-font-size-xxl: 20px;
+  --ms-line-height: 1.5715;
+  --ms-font-weight-normal: 400;
+  --ms-font-weight-medium: 500;
+  --ms-font-weight-bold: 600;
+
+  /* Sizing */
+  --ms-btn-height-mini: 24px;
+  --ms-btn-height-sm: 28px;
+  --ms-btn-height-md: 32px;
+  --ms-btn-height-lg: 36px;
+  --ms-input-height: 32px;
+  --ms-row-height: 46px;
+  --ms-menu-item-height: 40px;
+
+  /* Radius */
+  --ms-radius-sm: 2px;
+  --ms-radius-md: 4px;
+  --ms-radius-lg: 8px;
+  --ms-radius-circle: 50%;
+
+  /* Spacing */
+  --ms-space-xs: 4px;
+  --ms-space-sm: 8px;
+  --ms-space-md: 12px;
+  --ms-space-lg: 16px;
+  --ms-space-xl: 20px;
+  --ms-space-xxl: 24px;
+
+  /* Transition */
+  --ms-transition: all 0.1s cubic-bezier(0, 0, 1, 1);
+}
+
+
+/* === 2. Base Reset === */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--ms-font-family);
+  font-size: var(--ms-font-size-md);
+  color: var(--ms-text-2);
+  line-height: var(--ms-line-height);
+  background: var(--ms-bg-2);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+
+/* === 3. 按钮基础 (Button Base) === */
+.ms-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  height: var(--ms-btn-height-md);
+  padding: 0 16px;
+  font-family: var(--ms-font-family);
+  font-size: var(--ms-font-size-md);
+  font-weight: var(--ms-font-weight-normal);
+  line-height: 1;
+  white-space: nowrap;
+  text-decoration: none;
+  vertical-align: middle;
+  cursor: pointer;
+  user-select: none;
+  border: 1px solid transparent;
+  border-radius: var(--ms-radius-md);
+  outline: none;
+  transition: var(--ms-transition);
+}
+
+.ms-btn:focus-visible {
+  outline: 2px solid var(--ms-primary);
+  outline-offset: 1px;
+}
+
+
+/* === 4. 按钮变体 (Button Variants) === */
+
+/* --- 4.1 主按钮 (Primary) --- */
+.ms-btn--primary {
+  background: var(--ms-primary);
+  color: #FFFFFF;
+  border-color: transparent;
+}
+.ms-btn--primary:hover {
+  background: var(--ms-primary-light);
+}
+.ms-btn--primary:active {
+  background: var(--ms-primary-dark);
+}
+.ms-btn--primary:disabled,
+.ms-btn--primary.is-disabled {
+  background: var(--ms-text-4);
+  color: #FFFFFF;
+  cursor: not-allowed;
+  pointer-events: auto;
+}
+
+/* --- 4.2 边框按钮 (Outline) --- */
+.ms-btn--outline {
+  background: var(--ms-bg-1);
+  color: var(--ms-primary);
+  border-color: var(--ms-primary);
+}
+.ms-btn--outline:hover {
+  background: var(--ms-primary-bg);
+  border-color: var(--ms-primary-light);
+}
+.ms-btn--outline:active {
+  background: var(--ms-primary-bg-light);
+  color: var(--ms-primary-dark);
+  border-color: var(--ms-primary-dark);
+}
+.ms-btn--outline:disabled,
+.ms-btn--outline.is-disabled {
+  background: var(--ms-bg-2);
+  color: var(--ms-text-4);
+  border-color: var(--ms-border);
+  cursor: not-allowed;
+}
+
+/* --- 4.3 次要按钮 (Secondary / Default) --- */
+.ms-btn--secondary {
+  background: var(--ms-bg-3);
+  color: var(--ms-text-2);
+  border-color: transparent;
+}
+.ms-btn--secondary:hover {
+  background: var(--ms-bg-4);
+}
+.ms-btn--secondary:active {
+  background: var(--ms-bg-5);
+}
+.ms-btn--secondary:disabled,
+.ms-btn--secondary.is-disabled {
+  background: var(--ms-bg-2);
+  color: var(--ms-text-4);
+  cursor: not-allowed;
+}
+
+/* --- 4.4 危险按钮 (Danger) --- */
+.ms-btn--danger {
+  background: var(--ms-danger);
+  color: #FFFFFF;
+  border-color: transparent;
+}
+.ms-btn--danger:hover {
+  background: var(--ms-danger-light);
+}
+.ms-btn--danger:active {
+  background: var(--ms-danger-dark);
+}
+.ms-btn--danger:disabled,
+.ms-btn--danger.is-disabled {
+  background: var(--ms-danger-disabled-bg);
+  color: var(--ms-danger-disabled-text);
+  cursor: not-allowed;
+}
+
+/* --- 4.5 危险边框按钮 (Danger Outline) --- */
+.ms-btn--danger-outline {
+  background: var(--ms-bg-1);
+  color: var(--ms-danger);
+  border-color: var(--ms-danger);
+}
+.ms-btn--danger-outline:hover {
+  background: var(--ms-danger-bg);
+  border-color: var(--ms-danger-light);
+}
+.ms-btn--danger-outline:active {
+  color: var(--ms-danger-dark);
+  border-color: var(--ms-danger-dark);
+}
+
+/* --- 4.6 文字按钮 (Text) --- */
+.ms-btn--text {
+  background: transparent;
+  color: var(--ms-primary);
+  border-color: transparent;
+  padding: 0 8px;
+}
+.ms-btn--text:hover {
+  background: var(--ms-bg-3);
+  color: var(--ms-primary-light);
+}
+.ms-btn--text:active {
+  background: var(--ms-bg-4);
+  color: var(--ms-primary-dark);
+}
+.ms-btn--text:disabled,
+.ms-btn--text.is-disabled {
+  background: transparent;
+  color: var(--ms-text-4);
+  cursor: not-allowed;
+}
+
+/* --- 4.7 文字按钮-次要 (Text Secondary) --- */
+.ms-btn--text-secondary {
+  background: transparent;
+  color: var(--ms-text-2);
+  border-color: transparent;
+  padding: 0 8px;
+}
+.ms-btn--text-secondary:hover {
+  background: var(--ms-bg-3);
+}
+.ms-btn--text-secondary:active {
+  background: var(--ms-bg-4);
+}
+
+/* --- 4.8 图标按钮 (Icon) --- */
+.ms-btn--icon {
+  background: transparent;
+  color: var(--ms-text-2);
+  border-color: transparent;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border-radius: var(--ms-radius-md);
+}
+.ms-btn--icon:hover {
+  background: var(--ms-bg-3);
+  color: var(--ms-primary);
+}
+.ms-btn--icon:active {
+  background: var(--ms-bg-4);
+}
+
+/* --- 4.9 链接按钮 (Link) --- */
+.ms-btn--link {
+  background: transparent;
+  color: var(--ms-primary);
+  border: none;
+  padding: 0;
+  height: auto;
+  line-height: var(--ms-line-height);
+}
+.ms-btn--link:hover {
+  color: var(--ms-primary-light);
+  text-decoration: underline;
+}
+.ms-btn--link:active {
+  color: var(--ms-primary-dark);
+}
+
+
+/* === 5. 按钮尺寸 (Button Sizes) === */
+.ms-btn--mini {
+  height: var(--ms-btn-height-mini);
+  padding: 0 8px;
+  font-size: var(--ms-font-size-xs);
+}
+.ms-btn--small {
+  height: var(--ms-btn-height-sm);
+  padding: 0 12px;
+}
+.ms-btn--large {
+  height: var(--ms-btn-height-lg);
+  padding: 0 20px;
+}
+
+
+/* === 6. 按钮组 (Button Group) === */
+.ms-btn-group {
+  display: inline-flex;
+  gap: var(--ms-space-sm);
+  align-items: center;
+}
+
+.ms-btn-group--right {
+  justify-content: flex-end;
+}
+
+
+/* === 7. 页面布局 (Page Layout) === */
+.ms-layout {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* --- 顶部导航栏 --- */
+.ms-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 48px;
+  background: linear-gradient(135deg, #6B2D7B 0%, #8B4E9A 50%, #783887 100%);
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  z-index: 100;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+}
+
+.ms-header__logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #FFFFFF;
+  font-size: var(--ms-font-size-lg);
+  font-weight: var(--ms-font-weight-bold);
+  text-decoration: none;
+}
+
+.ms-header__logo-icon {
+  width: 32px;
+  height: 32px;
+  background: #FFFFFF;
+  border-radius: var(--ms-radius-circle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  color: var(--ms-primary);
+  font-size: 14px;
+}
+
+.ms-header__nav {
+  display: flex;
+  align-items: center;
+  margin-left: 24px;
+  gap: 4px;
+}
+
+.ms-header__nav-item {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: var(--ms-font-size-md);
+  padding: 4px 12px;
+  border-radius: var(--ms-radius-md);
+  cursor: pointer;
+  text-decoration: none;
+  transition: var(--ms-transition);
+}
+.ms-header__nav-item:hover {
+  color: #FFFFFF;
+  background: rgba(255, 255, 255, 0.1);
+}
+.ms-header__nav-item.is-active {
+  color: #FFFFFF;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.ms-header__actions {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.ms-header__action-icon {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.8);
+  border-radius: var(--ms-radius-md);
+  cursor: pointer;
+  transition: var(--ms-transition);
+}
+.ms-header__action-icon:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: #FFFFFF;
+}
+
+
+/* --- 侧边栏 --- */
+.ms-sidebar {
+  position: fixed;
+  top: 48px;
+  left: 0;
+  width: 180px;
+  height: calc(100vh - 48px);
+  background: var(--ms-bg-1);
+  border-right: 1px solid var(--ms-border);
+  box-shadow: var(--ms-shadow-sidebar);
+  padding: 8px 0;
+  overflow-y: auto;
+  z-index: 50;
+}
+
+.ms-sidebar__item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: var(--ms-menu-item-height);
+  padding: 0 20px;
+  color: var(--ms-text-2);
+  font-size: var(--ms-font-size-md);
+  cursor: pointer;
+  transition: var(--ms-transition);
+  text-decoration: none;
+  border-left: 3px solid transparent;
+}
+.ms-sidebar__item:hover {
+  background: var(--ms-bg-3);
+}
+.ms-sidebar__item.is-active {
+  color: var(--ms-primary);
+  background: var(--ms-primary-bg);
+  border-left-color: var(--ms-primary);
+  font-weight: var(--ms-font-weight-medium);
+}
+
+.ms-sidebar__icon {
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.ms-sidebar__divider {
+  margin: 4px 16px;
+  border: none;
+  border-top: 1px solid var(--ms-border);
+}
+
+
+/* --- 主内容区 --- */
+.ms-main {
+  margin-left: 180px;
+  margin-top: 48px;
+  padding: var(--ms-space-xxl);
+  min-height: calc(100vh - 48px);
+  flex: 1;
+  overflow-y: auto;
+  background: var(--ms-bg-2);
+}
+
+.ms-content-card {
+  background: var(--ms-bg-1);
+  border-radius: var(--ms-radius-md);
+  box-shadow: var(--ms-shadow-card);
+  padding: var(--ms-space-xl);
+}
+
+
+/* === 8. 面包屑 (Breadcrumb) === */
+.ms-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: var(--ms-font-size-md);
+  line-height: 32px;
+  margin-bottom: var(--ms-space-lg);
+}
+
+.ms-breadcrumb__item {
+  color: var(--ms-text-3);
+  text-decoration: none;
+  cursor: pointer;
+  transition: var(--ms-transition);
+}
+.ms-breadcrumb__item:hover {
+  color: var(--ms-primary);
+}
+.ms-breadcrumb__item.is-current {
+  color: var(--ms-text-1);
+  font-weight: var(--ms-font-weight-medium);
+  cursor: default;
+}
+
+.ms-breadcrumb__separator {
+  color: var(--ms-text-4);
+}
+
+
+/* === 9. 工具栏 (Toolbar) === */
+.ms-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--ms-space-lg);
+  gap: var(--ms-space-lg);
+}
+
+.ms-toolbar__left {
+  display: flex;
+  align-items: center;
+  gap: var(--ms-space-sm);
+}
+
+.ms-toolbar__right {
+  display: flex;
+  align-items: center;
+  gap: var(--ms-space-sm);
+}
+
+
+/* === 10. 搜索输入框 (Search Input) === */
+.ms-input {
+  display: inline-flex;
+  align-items: center;
+  height: var(--ms-input-height);
+  padding: 0 12px;
+  background: var(--ms-bg-1);
+  border: 1px solid var(--ms-border);
+  border-radius: var(--ms-radius-md);
+  font-size: var(--ms-font-size-md);
+  color: var(--ms-text-1);
+  transition: var(--ms-transition);
+  width: 240px;
+}
+
+.ms-input:hover {
+  border-color: var(--ms-text-4);
+}
+
+.ms-input:focus,
+.ms-input:focus-within {
+  border-color: var(--ms-primary);
+  box-shadow: 0 0 0 2px rgba(120, 56, 135, 0.1);
+}
+
+.ms-input::placeholder {
+  color: var(--ms-text-4);
+}
+
+.ms-input__inner {
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--ms-text-1);
+  font-size: var(--ms-font-size-md);
+  font-family: var(--ms-font-family);
+  flex: 1;
+  width: 100%;
+  height: 100%;
+}
+
+.ms-input__inner::placeholder {
+  color: var(--ms-text-4);
+}
+
+.ms-input__suffix {
+  display: flex;
+  align-items: center;
+  color: var(--ms-text-3);
+  margin-left: 4px;
+  cursor: pointer;
+}
+.ms-input__suffix:hover {
+  color: var(--ms-text-2);
+}
+
+
+/* === 11. 表格 (Table) === */
+.ms-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--ms-font-size-md);
+}
+
+.ms-table thead th {
+  background: var(--ms-bg-3);
+  color: var(--ms-text-3);
+  font-weight: var(--ms-font-weight-medium);
+  text-align: left;
+  padding: 0 16px;
+  height: 40px;
+  border-bottom: 1px solid var(--ms-border);
+  white-space: nowrap;
+}
+
+.ms-table tbody td {
+  padding: 0 16px;
+  height: var(--ms-row-height);
+  border-bottom: 1px solid var(--ms-border);
+  color: var(--ms-text-2);
+  vertical-align: middle;
+}
+
+.ms-table tbody tr:hover td {
+  background: var(--ms-bg-2);
+}
+
+.ms-table tbody tr.is-selected td {
+  background: var(--ms-primary-bg);
+}
+
+.ms-table__sort {
+  display: inline-flex;
+  flex-direction: column;
+  margin-left: 4px;
+  color: var(--ms-text-4);
+  font-size: 10px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.ms-table__checkbox {
+  width: 16px;
+  height: 16px;
+  border: 1px solid var(--ms-border);
+  border-radius: 2px;
+  cursor: pointer;
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--ms-transition);
+}
+.ms-table__checkbox:checked {
+  background: var(--ms-primary);
+  border-color: var(--ms-primary);
+}
+.ms-table__checkbox:checked::after {
+  content: "✓";
+  color: #FFFFFF;
+  font-size: 10px;
+}
+
+.ms-table__checkbox--indeterminate {
+  background: var(--ms-primary);
+  border-color: var(--ms-primary);
+}
+.ms-table__checkbox--indeterminate::after {
+  content: "−";
+  color: #FFFFFF;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+/* 表格操作列按钮 */
+.ms-table__actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+
+/* === 12. Tag 标签 (Tag) === */
+.ms-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 8px;
+  font-size: var(--ms-font-size-xs);
+  border-radius: var(--ms-radius-sm);
+  line-height: 20px;
+  white-space: nowrap;
+}
+
+.ms-tag--default {
+  background: var(--ms-bg-3);
+  color: var(--ms-text-3);
+}
+
+.ms-tag--primary {
+  background: var(--ms-primary-bg);
+  color: var(--ms-primary);
+}
+
+.ms-tag--success {
+  background: var(--ms-success-bg);
+  color: var(--ms-success);
+}
+
+.ms-tag--danger {
+  background: var(--ms-danger-bg);
+  color: var(--ms-danger);
+}
+
+.ms-tag--warning {
+  background: var(--ms-warning-bg);
+  color: var(--ms-warning);
+}
+
+
+/* === 13. 模态对话框 (Modal) === */
+.ms-modal-mask {
+  position: fixed;
+  inset: 0;
+  background: var(--ms-mask);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ms-modal {
+  background: var(--ms-bg-1);
+  border-radius: var(--ms-radius-md);
+  box-shadow: var(--ms-shadow-modal);
+  min-width: 420px;
+  max-width: 600px;
+  animation: ms-modal-in 0.2s ease-out;
+}
+
+@keyframes ms-modal-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.ms-modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px 0;
+}
+
+.ms-modal__title {
+  font-size: var(--ms-font-size-lg);
+  font-weight: var(--ms-font-weight-bold);
+  color: var(--ms-text-1);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ms-modal__close {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ms-text-3);
+  cursor: pointer;
+  border-radius: var(--ms-radius-md);
+  border: none;
+  background: transparent;
+  transition: var(--ms-transition);
+}
+.ms-modal__close:hover {
+  background: var(--ms-bg-3);
+  color: var(--ms-text-1);
+}
+
+.ms-modal__body {
+  padding: 12px 24px 20px;
+  font-size: var(--ms-font-size-md);
+  color: var(--ms-text-2);
+  line-height: var(--ms-line-height);
+}
+
+.ms-modal__footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--ms-space-sm);
+  padding: 12px 24px;
+  border-top: 1px solid var(--ms-border);
+}
+
+
+/* === 14. 模块树 (Module Tree Panel) === */
+.ms-tree-panel {
+  width: 280px;
+  border-right: 1px solid var(--ms-border);
+  padding: 16px;
+  overflow-y: auto;
+  flex-shrink: 0;
+}
+
+.ms-tree-panel__search {
+  margin-bottom: 12px;
+}
+
+.ms-tree-panel__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 0;
+  color: var(--ms-primary);
+  font-size: var(--ms-font-size-md);
+}
+
+.ms-tree-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 8px 6px 16px;
+  border-radius: var(--ms-radius-md);
+  cursor: pointer;
+  transition: var(--ms-transition);
+  font-size: var(--ms-font-size-md);
+  color: var(--ms-text-2);
+}
+.ms-tree-item:hover {
+  background: var(--ms-bg-3);
+}
+.ms-tree-item.is-active {
+  background: var(--ms-primary-bg);
+  color: var(--ms-primary);
+}
+
+.ms-tree-item__count {
+  color: var(--ms-text-3);
+  font-size: var(--ms-font-size-xs);
+}
+
+.ms-tree-item--child {
+  padding-left: 32px;
+}
+
+
+/* === 15. 分页器 (Pagination) === */
+.ms-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 12px 0;
+  font-size: var(--ms-font-size-md);
+  color: var(--ms-text-2);
+}
+
+.ms-pagination__btn {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--ms-border);
+  border-radius: var(--ms-radius-md);
+  background: var(--ms-bg-1);
+  color: var(--ms-text-2);
+  cursor: pointer;
+  transition: var(--ms-transition);
+}
+.ms-pagination__btn:hover {
+  border-color: var(--ms-primary);
+  color: var(--ms-primary);
+}
+.ms-pagination__btn.is-active {
+  background: var(--ms-primary);
+  color: #FFFFFF;
+  border-color: var(--ms-primary);
+}
+.ms-pagination__btn:disabled {
+  color: var(--ms-text-4);
+  cursor: not-allowed;
+}
+
+
+/* === 16. 分割线 (Divider) === */
+.ms-divider {
+  border: none;
+  border-top: 1px solid var(--ms-border);
+  margin: var(--ms-space-lg) 0;
+}
+
+.ms-divider--vertical {
+  display: inline-block;
+  width: 1px;
+  height: 16px;
+  background: var(--ms-border);
+  margin: 0 var(--ms-space-sm);
+  vertical-align: middle;
+}
+
+
+/* === 17. 表单 (Form) === */
+.ms-form-item {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: var(--ms-space-lg);
+}
+
+.ms-form-item__label {
+  flex-shrink: 0;
+  width: 100px;
+  height: var(--ms-input-height);
+  line-height: var(--ms-input-height);
+  text-align: right;
+  padding-right: 12px;
+  font-size: var(--ms-font-size-md);
+  color: var(--ms-text-1);
+}
+
+.ms-form-item__label--required::before {
+  content: "*";
+  color: var(--ms-danger);
+  margin-right: 4px;
+}
+
+.ms-form-item__content {
+  flex: 1;
+}
+
+.ms-select {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  height: var(--ms-input-height);
+  padding: 0 12px;
+  background: var(--ms-bg-1);
+  border: 1px solid var(--ms-border);
+  border-radius: var(--ms-radius-md);
+  font-size: var(--ms-font-size-md);
+  color: var(--ms-text-1);
+  cursor: pointer;
+  width: 100%;
+  transition: var(--ms-transition);
+}
+.ms-select:hover {
+  border-color: var(--ms-text-4);
+}
+.ms-select:focus {
+  border-color: var(--ms-primary);
+  box-shadow: 0 0 0 2px rgba(120, 56, 135, 0.1);
+}
+
+.ms-select__arrow {
+  color: var(--ms-text-3);
+  font-size: 12px;
+  transition: transform 0.2s;
+}
+
+
+/* === 18. Tooltip 提示 === */
+.ms-tooltip {
+  position: relative;
+  display: inline-flex;
+}
+
+.ms-tooltip__content {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--ms-text-1);
+  color: #FFFFFF;
+  font-size: var(--ms-font-size-xs);
+  padding: 6px 12px;
+  border-radius: var(--ms-radius-md);
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s;
+  z-index: 2000;
+}
+
+.ms-tooltip:hover .ms-tooltip__content {
+  opacity: 1;
+}
+
+
+/* === 19. 筛选标签 (Filter Bar) === */
+.ms-filter-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--ms-space-sm);
+  flex-wrap: wrap;
+}
+
+.ms-filter-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 24px;
+  padding: 0 8px;
+  background: var(--ms-primary-bg);
+  color: var(--ms-primary);
+  border-radius: var(--ms-radius-sm);
+  font-size: var(--ms-font-size-xs);
+  cursor: default;
+}
+
+.ms-filter-tag__close {
+  width: 14px;
+  height: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border-radius: var(--ms-radius-circle);
+  transition: var(--ms-transition);
+}
+.ms-filter-tag__close:hover {
+  background: var(--ms-primary-bg-light);
+}
+
+
+/* === 20. Utility Classes === */
+.ms-hidden { display: none !important; }
+.ms-flex { display: flex; }
+.ms-inline-flex { display: inline-flex; }
+.ms-items-center { align-items: center; }
+.ms-justify-between { justify-content: space-between; }
+.ms-justify-end { justify-content: flex-end; }
+.ms-gap-4 { gap: 4px; }
+.ms-gap-8 { gap: 8px; }
+.ms-gap-12 { gap: 12px; }
+.ms-gap-16 { gap: 16px; }
+.ms-mt-8 { margin-top: 8px; }
+.ms-mt-16 { margin-top: 16px; }
+.ms-mb-8 { margin-bottom: 8px; }
+.ms-mb-16 { margin-bottom: 16px; }
+.ms-ml-auto { margin-left: auto; }
+.ms-text-primary { color: var(--ms-primary); }
+.ms-text-success { color: var(--ms-success); }
+.ms-text-danger { color: var(--ms-danger); }
+.ms-text-warning { color: var(--ms-warning); }
+.ms-text-muted { color: var(--ms-text-3); }
+.ms-text-bold { font-weight: var(--ms-font-weight-bold); }
+.ms-truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }

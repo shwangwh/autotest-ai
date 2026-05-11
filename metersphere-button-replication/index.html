@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>项目中心 - 调度管理系统</title>
+  <meta name="description" content="项目中心调度管理系统 - 重点项目调度进度查看" />
+  <link rel="stylesheet" href="./project-center.css" />
+</head>
+<body>
+  <div class="pc-layout">
+    <!-- ===== 左侧导航栏 ===== -->
+    <aside class="pc-sidebar" id="sidebar">
+      <div class="pc-sidebar-header">
+        <div class="pc-sidebar-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="7" height="7" rx="1"/>
+            <rect x="14" y="3" width="7" height="7" rx="1"/>
+            <rect x="3" y="14" width="7" height="7" rx="1"/>
+            <rect x="14" y="14" width="7" height="7" rx="1"/>
+          </svg>
+          调度任务管理
+        </div>
+      </div>
+      <nav class="pc-sidebar-nav">
+        <div class="pc-nav-item pc-nav-item--active" data-page="key-project">
+          <svg class="pc-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+          </svg>
+          <span>重点项目调度</span>
+        </div>
+        <div class="pc-nav-item" data-page="gov-invest">
+          <svg class="pc-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 21h18M3 10h18M5 6l7-3 7 3M4 10v11M20 10v11M8 14v3M12 14v3M16 14v3"/>
+          </svg>
+          <span>政府投资项目调度</span>
+        </div>
+        <div class="pc-nav-item" data-page="special-project">
+          <svg class="pc-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/>
+          </svg>
+          <span>专项项目调度</span>
+        </div>
+        <div class="pc-nav-item" data-page="fill-report">
+          <svg class="pc-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+            <line x1="16" y1="13" x2="8" y2="13"/>
+            <line x1="16" y1="17" x2="8" y2="17"/>
+            <polyline points="10 9 9 9 8 9"/>
+          </svg>
+          <span>项目调度填报</span>
+        </div>
+      </nav>
+    </aside>
+
+    <!-- ===== 主内容区 ===== -->
+    <main class="pc-main">
+      <!-- 面包屑导航 -->
+      <div class="pc-topbar">
+        <div class="pc-breadcrumb">
+          <span class="pc-breadcrumb-item">调度管理</span>
+          <span class="pc-breadcrumb-sep">›</span>
+          <span class="pc-breadcrumb-item">重点项目调度</span>
+          <span class="pc-breadcrumb-sep">›</span>
+          <span class="pc-breadcrumb-item pc-breadcrumb-item--active">进度查看</span>
+        </div>
+      </div>
+
+      <!-- 筛选器 -->
+      <div class="pc-filter-bar pc-animate-in">
+        <div class="pc-filter-row">
+          <div class="pc-filter-group">
+            <label class="pc-filter-label">项目名称</label>
+            <input type="text" class="pc-filter-input pc-filter-input--wide" placeholder="请输入项目名称" id="filter-name" />
+          </div>
+          <div class="pc-filter-group">
+            <label class="pc-filter-label">总投资（万元）</label>
+            <input type="text" class="pc-filter-input" placeholder="" id="filter-invest" />
+          </div>
+          <div class="pc-filter-group">
+            <label class="pc-filter-label">项目入</label>
+            <select class="pc-filter-select" id="filter-type">
+              <option value="">- 项目入 -</option>
+              <option value="1">全部</option>
+              <option value="2">新建</option>
+              <option value="3">续建</option>
+            </select>
+          </div>
+          <div class="pc-filter-group">
+            <label class="pc-filter-label">项目日</label>
+            <select class="pc-filter-select" id="filter-date">
+              <option value="">- 项目日 -</option>
+              <option value="1">全部</option>
+            </select>
+          </div>
+          <div class="pc-filter-group">
+            <label class="pc-filter-label">输入项目代码</label>
+            <input type="text" class="pc-filter-input" placeholder="输入项目代码" id="filter-code" />
+          </div>
+          <div class="pc-filter-group">
+            <label class="pc-filter-label">期号</label>
+            <select class="pc-filter-select" id="filter-period">
+              <option value="2026W16">2026W16</option>
+              <option value="2026W15">2026W15</option>
+              <option value="2026W14">2026W14</option>
+            </select>
+          </div>
+
+          <div class="pc-filter-actions">
+            <button class="pc-btn pc-btn--primary" id="btn-search" onclick="handleSearch()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+                <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+              </svg>
+              查询
+            </button>
+            <button class="pc-btn" id="btn-reset" onclick="handleReset()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+                <polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/>
+              </svg>
+              重置
+            </button>
+            <button class="pc-btn--expand" id="btn-expand" onclick="toggleExpand()">
+              <span id="expand-text">展开</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12" id="expand-icon">
+                <polyline points="6 9 12 15 18 9"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 操作工具栏 -->
+      <div class="pc-toolbar pc-animate-in">
+        <div class="pc-toolbar-left">
+          <button class="pc-btn pc-btn--primary" id="btn-import" onclick="handleImport()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+              <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+              <polyline points="17 8 12 3 7 8"/>
+              <line x1="12" y1="3" x2="12" y2="15"/>
+            </svg>
+            调度数据导入
+          </button>
+          <button class="pc-btn" id="btn-history" onclick="handleHistory()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+              <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+            </svg>
+            查看项目历
+          </button>
+          <button class="pc-btn" id="btn-edit" onclick="handleEdit()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+              <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
+              <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+            </svg>
+            修改
+          </button>
+          <button class="pc-btn" id="btn-export" onclick="handleExport()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+              <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+              <polyline points="7 10 12 15 17 10"/>
+              <line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+            报表导出
+          </button>
+        </div>
+        <div class="pc-toolbar-right">
+          <span style="font-size:12px; color: var(--pc-text-3);">已选 <strong id="selected-count" style="color: var(--pc-primary);">0</strong> 条</span>
+        </div>
+      </div>
+
+      <!-- 数据表格 -->
+      <div class="pc-table-container pc-animate-in" id="table-container">
+        <table class="pc-table" id="project-table">
+          <thead>
+            <tr>
+              <th style="width:36px"><input type="checkbox" class="pc-checkbox" id="check-all" onchange="toggleCheckAll()" /></th>
+              <th style="width:50px">序号</th>
+              <th style="width:80px">报送情况</th>
+              <th style="width:80px">预警类型</th>
+              <th style="width:90px">审核单位</th>
+              <th style="min-width:180px">项目名称</th>
+              <th style="width:80px">期号</th>
+              <th style="min-width:160px">计划任务名称</th>
+              <th style="width:110px">总投资<br/>(万元)</th>
+              <th style="width:110px">本月完成投资<br/>(万元)</th>
+              <th style="width:110px">累计完成投资<br/>(万元)</th>
+            </tr>
+          </thead>
+          <tbody id="table-body">
+            <!-- 数据由 JS 动态渲染 -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 分页 -->
+      <div class="pc-pagination pc-animate-in" id="pagination">
+        <span class="pc-pagination-info">共 <strong id="total-count">10</strong> 条</span>
+        <select class="pc-pagination-select" id="page-size" onchange="changePageSize()">
+          <option value="20">20条/页</option>
+          <option value="50">50条/页</option>
+          <option value="100">100条/页</option>
+        </select>
+        <span class="pc-pagination-label">前往</span>
+        <input type="text" class="pc-page-input" value="1" id="page-jump" onchange="jumpToPage()" />
+        <span class="pc-pagination-label">页</span>
+        <div class="pc-pagination-pages" id="page-buttons">
+          <!-- 由 JS 动态渲染 -->
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // ===== 模拟数据 =====
+    const projectData = [
+      {
+        id: 1,
+        seq: 1,
+        status: '待审核',
+        warningType: '无预警',
+        reviewUnit: '省重点办',
+        projectName: '项站调度项程',
+        period: '2026W16',
+        taskName: 'jiaxi调度填站',
+        totalInvest: 123,
+        monthInvest: 0,
+        accumulatedInvest: 11,
+        isParent: false,
+        children: []
+      },
+      {
+        id: 2,
+        seq: 2,
+        status: '已审核',
+        warningType: '无预警',
+        reviewUnit: '',
+        projectName: '2026年总体计划',
+        projectBadge: '总',
+        period: '2026W16',
+        taskName: '第一轮子调查项目',
+        totalInvest: 60599961,
+        monthInvest: 30,
+        accumulatedInvest: 121551,
+        isParent: true,
+        expanded: true,
+        children: [
+          {
+            id: 21,
+            seq: '[1]',
+            status: '已审核',
+            warningType: '无预警',
+            reviewUnit: '省重点办',
+            projectName: '下半年-新建204141128',
+            period: '2026W16',
+            taskName: '第一轮子调查项目',
+            totalInvest: 10099995,
+            monthInvest: 10,
+            accumulatedInvest: 20264
+          },
+          {
+            id: 22,
+            seq: '[2]',
+            status: '已审核',
+            warningType: '无预警',
+            reviewUnit: '省重点办',
+            projectName: '上半年-新建204141128',
+            period: '2026W16',
+            taskName: '第一轮子调查项目',
+            totalInvest: 10099992,
+            monthInvest: 0,
+            accumulatedInvest: 20251
+          },
+          {
+            id: 23,
+            seq: '[3]',
+            status: '已审核',
+            warningType: '无预警',
+            reviewUnit: '省重点办',
+            projectName: '上半年-续建04141128',
+            period: '2026W16',
+            taskName: '第一轮子调查项目',
+            totalInvest: 10099993,
+            monthInvest: 0,
+            accumulatedInvest: 20252
+          },
+          {
+            id: 24,
+            seq: '[4]',
+            status: '已审核',
+            warningType: '无预警',
+            reviewUnit: '省重点办',
+            projectName: '下半年-新建104141128',
+            period: '2026W16',
+            taskName: '第一轮子调查项目',
+            totalInvest: 10099994,
+            monthInvest: 0,
+            accumulatedInvest: 20253
+          },
+          {
+            id: 25,
+            seq: '[5]',
+            status: '已审核',
+            warningType: '无预警',
+            reviewUnit: '省重点办',
+            projectName: '上半年-新建104141128',
+            period: '2026W16',
+            taskName: '第一轮子调查项目',
+            totalInvest: 10099991,
+            monthInvest: 20,
+            accumulatedInvest: 20276
+          },
+          {
+            id: 26,
+            seq: '[6]',
+            status: '已审核',
+            warningType: '无预警',
+            reviewUnit: '省重点办',
+            projectName: '下半年-续建204141128',
+            period: '2026W16',
+            taskName: '第一轮子调查项目',
+            totalInvest: 10099996,
+            monthInvest: 0,
+            accumulatedInvest: 20255
+          }
+        ]
+      },
+      {
+        id: 3,
+        seq: 3,
+        status: '已审核',
+        warningType: '无预警',
+        reviewUnit: '省重点办',
+        projectName: '下半年-新建204141047',
+        period: '2026W16',
+        taskName: '1051第一轮报交...',
+        totalInvest: 10099995,
+        monthInvest: 10,
+        accumulatedInvest: 20264,
+        isParent: false,
+        children: []
+      }
+    ];
+
+    // ===== 状态管理 =====
+    let selectedRows = new Set();
+    let expandedRows = new Set([2]); // 默认展开第2行
+    let currentPage = 1;
+    let pageSize = 20;
+
+    // ===== 渲染表格 =====
+    function renderTable() {
+      const tbody = document.getElementById('table-body');
+      tbody.innerHTML = '';
+
+      projectData.forEach((row, index) => {
+        // 主行
+        const tr = createRow(row, false, row.isParent);
+        tbody.appendChild(tr);
+
+        // 子行
+        if (row.isParent && expandedRows.has(row.id) && row.children) {
+          row.children.forEach(child => {
+            const childTr = createRow(child, true, false);
+            tbody.appendChild(childTr);
+          });
+        }
+      });
+
+      updateSelectedCount();
+    }
+
+    function createRow(data, isChild, isParent) {
+      const tr = document.createElement('tr');
+      if (isChild) tr.classList.add('row-child');
+      if (selectedRows.has(data.id)) tr.classList.add('row-selected');
+
+      // 格式化数字
+      const formatNum = (n) => {
+        if (n === null || n === undefined) return '-';
+        return n.toLocaleString('zh-CN');
+      };
+
+      // 状态 HTML
+      const statusClass = data.status === '待审核' ? 'pc-status--review' : 'pc-status--checked';
+
+      // 项目名称
+      let projectNameHtml = '';
+      if (data.projectBadge) {
+        projectNameHtml = `<span class="pc-badge-green">${data.projectBadge}</span>`;
+      }
+      projectNameHtml += `<a class="pc-project-link" href="javascript:void(0)" onclick="viewProject(${data.id})">${data.projectName}</a>`;
+
+      // 树形展开按钮
+      let treeToggle = '';
+      if (isParent) {
+        const expanded = expandedRows.has(data.id);
+        treeToggle = `<button class="pc-tree-toggle ${expanded ? 'pc-tree-toggle--expanded' : ''}" onclick="toggleExpand2(${data.id})">▶</button>`;
+      }
+
+      // 序号显示
+      let seqHtml = isChild ? `<span style="color:var(--pc-text-3)">${data.seq}</span>` : data.seq;
+
+      tr.innerHTML = `
+        <td><input type="checkbox" class="pc-checkbox" ${selectedRows.has(data.id) ? 'checked' : ''} onchange="toggleRow(${data.id}, this)" /></td>
+        <td>${treeToggle}${seqHtml}</td>
+        <td><span class="${statusClass} pc-status">${data.status}</span></td>
+        <td><span class="pc-status pc-status--none">${data.warningType}</span></td>
+        <td style="font-size:11px; color:var(--pc-text-2)">${data.reviewUnit || '<span class="pc-empty-cell">省重点办</span>'}</td>
+        <td class="text-left">${projectNameHtml}</td>
+        <td><strong>${data.period}</strong></td>
+        <td class="text-left" style="font-size:11px">${data.taskName}</td>
+        <td class="text-right"><span class="pc-num-highlight">${formatNum(data.totalInvest)}</span></td>
+        <td class="text-right">${formatNum(data.monthInvest)}</td>
+        <td class="text-right"><span class="pc-num-highlight">${formatNum(data.accumulatedInvest)}</span></td>
+      `;
+
+      return tr;
+    }
+
+    // ===== 分页渲染 =====
+    function renderPagination() {
+      const totalItems = 10;
+      const totalPages = Math.ceil(totalItems / pageSize) || 1;
+      document.getElementById('total-count').textContent = totalItems;
+
+      const container = document.getElementById('page-buttons');
+      container.innerHTML = '';
+
+      // 上一页
+      const prevBtn = createPageBtn('<', currentPage <= 1, () => goToPage(currentPage - 1));
+      container.appendChild(prevBtn);
+
+      // 页码
+      for (let i = 1; i <= totalPages; i++) {
+        const btn = createPageBtn(i, false, () => goToPage(i), i === currentPage);
+        container.appendChild(btn);
+      }
+
+      // 下一页
+      const nextBtn = createPageBtn('>', currentPage >= totalPages, () => goToPage(currentPage + 1));
+      container.appendChild(nextBtn);
+    }
+
+    function createPageBtn(text, disabled, onClick, active) {
+      const btn = document.createElement('button');
+      btn.className = 'pc-page-btn' + (active ? ' pc-page-btn--active' : '');
+      btn.textContent = text;
+      btn.disabled = disabled;
+      btn.onclick = onClick;
+      return btn;
+    }
+
+    function goToPage(page) {
+      currentPage = page;
+      document.getElementById('page-jump').value = page;
+      renderPagination();
+      renderTable();
+    }
+
+    function jumpToPage() {
+      const val = parseInt(document.getElementById('page-jump').value);
+      if (!isNaN(val) && val >= 1) {
+        goToPage(val);
+      }
+    }
+
+    function changePageSize() {
+      pageSize = parseInt(document.getElementById('page-size').value);
+      currentPage = 1;
+      renderPagination();
+      renderTable();
+    }
+
+    // ===== 勾选功能 =====
+    function toggleCheckAll() {
+      const checked = document.getElementById('check-all').checked;
+      if (checked) {
+        projectData.forEach(row => {
+          selectedRows.add(row.id);
+          if (row.children) {
+            row.children.forEach(child => selectedRows.add(child.id));
+          }
+        });
+      } else {
+        selectedRows.clear();
+      }
+      renderTable();
+    }
+
+    function toggleRow(id, checkbox) {
+      if (checkbox.checked) {
+        selectedRows.add(id);
+      } else {
+        selectedRows.delete(id);
+      }
+      // 更新全选状态
+      updateCheckAll();
+      updateSelectedCount();
+      // 更新行样式
+      const row = checkbox.closest('tr');
+      if (row) {
+        row.classList.toggle('row-selected', checkbox.checked);
+      }
+    }
+
+    function updateCheckAll() {
+      let totalCount = 0;
+      projectData.forEach(row => {
+        totalCount++;
+        if (row.children) totalCount += row.children.length;
+      });
+      document.getElementById('check-all').checked = selectedRows.size === totalCount;
+    }
+
+    function updateSelectedCount() {
+      document.getElementById('selected-count').textContent = selectedRows.size;
+    }
+
+    // ===== 树形展开 =====
+    function toggleExpand2(id) {
+      if (expandedRows.has(id)) {
+        expandedRows.delete(id);
+      } else {
+        expandedRows.add(id);
+      }
+      renderTable();
+    }
+
+    // ===== 筛选/搜索 =====
+    function handleSearch() {
+      const name = document.getElementById('filter-name').value;
+      const code = document.getElementById('filter-code').value;
+      // 模拟搜索反馈
+      showToast('正在查询数据...');
+      setTimeout(() => {
+        showToast('查询完成，共找到 ' + projectData.length + ' 条记录');
+      }, 600);
+    }
+
+    function handleReset() {
+      document.getElementById('filter-name').value = '';
+      document.getElementById('filter-invest').value = '';
+      document.getElementById('filter-code').value = '';
+      document.getElementById('filter-type').selectedIndex = 0;
+      document.getElementById('filter-date').selectedIndex = 0;
+      showToast('筛选条件已重置');
+    }
+
+    function toggleExpand() {
+      const text = document.getElementById('expand-text');
+      const icon = document.getElementById('expand-icon');
+      if (text.textContent === '展开') {
+        text.textContent = '收起';
+        icon.style.transform = 'rotate(180deg)';
+      } else {
+        text.textContent = '展开';
+        icon.style.transform = '';
+      }
+    }
+
+    // ===== 工具栏操作 =====
+    function handleImport() {
+      showToast('正在打开调度数据导入窗口...');
+    }
+
+    function handleHistory() {
+      showToast('正在加载项目历史记录...');
+    }
+
+    function handleEdit() {
+      if (selectedRows.size === 0) {
+        showToast('请先选择要修改的记录', 'warning');
+        return;
+      }
+      showToast('正在打开修改窗口...');
+    }
+
+    function handleExport() {
+      showToast('正在生成报表...');
+      setTimeout(() => showToast('报表导出成功！'), 1200);
+    }
+
+    function viewProject(id) {
+      showToast('正在查看项目 #' + id + ' 详情...');
+    }
+
+    // ===== Toast 提示 =====
+    function showToast(msg, type) {
+      const existing = document.querySelector('.pc-toast');
+      if (existing) existing.remove();
+
+      const toast = document.createElement('div');
+      toast.className = 'pc-toast';
+      toast.style.cssText = `
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%) translateY(-10px);
+        padding: 8px 24px;
+        background: ${type === 'warning' ? '#fff3e0' : '#e8f5e9'};
+        color: ${type === 'warning' ? '#e65100' : '#2e7d32'};
+        border: 1px solid ${type === 'warning' ? '#ffe0b2' : '#c8e6c9'};
+        border-radius: 4px;
+        font-size: 13px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        z-index: 9999;
+        opacity: 0;
+        transition: all 0.3s ease;
+      `;
+      toast.textContent = msg;
+      document.body.appendChild(toast);
+
+      // 动画
+      requestAnimationFrame(() => {
+        toast.style.opacity = '1';
+        toast.style.transform = 'translateX(-50%) translateY(0)';
+      });
+
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateX(-50%) translateY(-10px)';
+        setTimeout(() => toast.remove(), 300);
+      }, 2500);
+    }
+
+    // ===== 侧边栏导航切换 =====
+    document.querySelectorAll('.pc-nav-item').forEach(item => {
+      item.addEventListener('click', function() {
+        document.querySelectorAll('.pc-nav-item').forEach(n => n.classList.remove('pc-nav-item--active'));
+        this.classList.add('pc-nav-item--active');
+        const page = this.dataset.page;
+        showToast('切换到: ' + this.querySelector('span').textContent);
+      });
+    });
+
+    // ===== 初始化 =====
+    document.addEventListener('DOMContentLoaded', () => {
+      renderTable();
+      renderPagination();
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,1948 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "智能测试平台 API",
+    "description": "智能测试平台完整接口文档，包含认证、项目管理、需求管理、测试点管理、测试用例管理、自动化执行六大模块",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8080",
+      "description": "本地开发服务器"
+    }
+  ],
+  "paths": {
+    "/api/auth/login": {
+      "post": {
+        "summary": "用户登录",
+        "description": "用户登录获取认证令牌",
+        "operationId": "login",
+        "tags": ["认证模块"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              },
+              "example": {
+                "username": "admin",
+                "password": "123456"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "登录成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginResponse"
+                },
+                "example": {
+                  "success": true,
+                  "message": "Login successful.",
+                  "authorization": "Basic YWRtaW46MTIzNDU2",
+                  "username": "admin"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/projects": {
+      "get": {
+        "summary": "获取所有项目",
+        "description": "获取项目列表",
+        "operationId": "getAllProjects",
+        "tags": ["项目管理模块"],
+        "security": [{"BasicAuth": []}],
+        "responses": {
+          "200": {
+            "description": "成功获取项目列表",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ProjectSummary"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "创建项目",
+        "description": "创建新项目",
+        "operationId": "createProject",
+        "tags": ["项目管理模块"],
+        "security": [{"BasicAuth": []}],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateProjectRequest"
+              },
+              "example": {
+                "name": "测试项目",
+                "description": "这是一个测试项目",
+                "owner": "admin"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "创建成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Project"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/projects/{id}": {
+      "get": {
+        "summary": "获取项目详情",
+        "description": "根据ID获取项目详细信息",
+        "operationId": "getProjectById",
+        "tags": ["项目管理模块"],
+        "security": [{"BasicAuth": []}],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "description": "项目ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功获取项目详情",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Project"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "更新项目",
+        "description": "更新项目信息",
+        "operationId": "updateProject",
+        "tags": ["项目管理模块"],
+        "security": [{"BasicAuth": []}],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "description": "项目ID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateProjectRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "更新成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Project"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "删除项目",
+        "description": "删除指定项目",
+        "operationId": "deleteProject",
+        "tags": ["项目管理模块"],
+        "security": [{"BasicAuth": []}],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "description": "项目ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "删除成功"
+          }
+        }
+      }
+    },
+    "/api/requirements": {
+      "get": {
+        "summary": "获取所有需求",
+        "description": "获取所有需求列表",
+        "operationId": "getAllRequirements",
+        "tags": ["需求管理模块"],
+        "security": [{"BasicAuth": []}],
+        "responses": {
+          "200": {
+            "description": "成功获取需求列表",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Requirement"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/requirements/project/{projectId}": {
+      "get": {
+        "summary": "按项目获取需求",
+        "description": "获取指定项目下的所有需求",
+        "operationId": "getRequirementsByProjectId",
+        "tags": ["需求管理模块"],
+        "security": [{"BasicAuth": []}],
+        "parameters": [
+          {
+            "name": "projectId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "description": "项目ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功获取需求列表",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Requirement"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/requirements/{id}": {
+      "get": {
+        "summary": "获取需求详情",
+        "description": "根据ID获取需求详细信息",
+        "operationId": "getRequirementById",
+        "tags": ["需求管理模块"],
+        "security": [{"BasicAuth": []}],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "description": "需求ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功获取需求详情",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Requirement"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/requirements/upload": {
+      "post": {
+        "summary": "上传需求文件",
+        "description": "上传需求文档文件",
+        "operationId": "uploadRequirement",
+        "tags": ["需求管理模块"],
+        "security": [{"BasicAuth": []}],
+        "parameters": [
+          {
+            "name": "projectId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "description": "项目ID"
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "需求名称"
+          },
+          {
+            "name": "version",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "版本号"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "需求文件"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "上传成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Requirement"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/requirements/{id}/generate-test-points": {
+      "post": {
+        "summary": "生成测试点",
+        "description": "根据需求自动生成测试点（AI分析）",
+        "operationId": "generateTestPoints",
+        "tags": ["需求管理模块"],
+        "security": [{"BasicAuth": []}],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "description": "需求ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "生成成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TestPoint"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/requirements/{id}/confirm-test-points": {
+      "post": {
+        "summary": "确认测试点",
+        "description": "确认需求关联的测试点",
+        "operationId": "confirmTestPoints",
+        "tags": ["需求管理模块"],
+        "security": [{"BasicAuth": []}],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "description": "需求ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "确认成功"
+          }
+        }
+      }
+    },
+    "/api/test-points": {
+      "get": {
+        "summary": "获取所有测试点",
+        "description": "获取所有测试点列表",
+        "operationId": "getAllTestPoints",
+        "tags": ["测试点管理模块"],
+        "security": [{"BasicAuth": []}],
+        "responses": {
+          "200": {
+            "description": "成功获取测试点列表",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TestPoint"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "创建测试点",
+        "description": "创建新的测试点",
+        "operationId": "createTestPoint",
+        "tags": ["测试点管理模块"],
+        "security": [{"BasicAuth": []}],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateTestPointRequest"
+              },
+              "example": {
+                "projectId": 1,
+                "requirementId": 1,
+                "pointName": "登录功能测试点",
+                "pointType": "FUNCTIONAL",
+                "function": "用户登录",
+                "sceneType": "NORMAL",
+                "riskLevel": "HIGH",
+                "businessRule": "用户必须使用正确的账号密码登录",
+                "description": "验证用户登录功能",
+                "automationSuggested": true
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "创建成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TestPoint"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/test-points/requirement/{requirementId}": {
+      "get": {
+        "summary": "按需求获取测试点",
+        "description": "获取指定需求下的所有测试点",
+        "operationId": "getTestPointsByRequirementId",
+        "tags": ["测试点管理模块"],
+        "security": [{"BasicAuth": []}],
+        "parameters": [
+          {
+            "name": "requirementId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "description": "需求ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功获取测试点列表",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TestPoint"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/test-points/project/{projectId}": {
+      "get": {
+        "summary": "按项目获取测试点",
+        "description": "获取指定项目下的所有测试点",
+        "operationId": "getTestPointsByProjectId",
+        "tags": ["测试点管理模块"],
+        "security": [{"BasicAuth": []}],
+        "parameters": [
+          {
+            "name": "projectId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "description": "项目ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功获取测试点列表",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TestPoint"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/test-points/{id}": {
+      "get": {
+        "summary": "获取测试点详情",
+        "description": "根据ID获取测试点详细信息",
+        "operationId": "getTestPointById",
+        "tags": ["测试点管理模块"],
+        "security": [{"BasicAuth": []}],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "description": "测试点ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功获取测试点详情",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TestPoint"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "更新测试点",
+        "description": "更新测试点信息",
+        "operationId": "updateTestPoint",
+        "tags": ["测试点管理模块"],
+        "security": [{"BasicAuth": []}],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "description": "测试点ID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateTestPointRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "更新成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TestPoint"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "删除测试点",
+        "description": "删除指定测试点",
+        "operationId": "deleteTestPoint",
+        "tags": ["测试点管理模块"],
+        "security": [{"BasicAuth": []}],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "description": "测试点ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "删除成功"
+          }
+        }
+      }
+    },
+    "/api/test-cases": {
+      "get": {
+        "summary": "获取所有测试用例",
+        "description": "获取所有测试用例列表",
+        "operationId": "getAllTestCases",
+        "tags": ["测试用例管理模块"],
+        "security": [{"BasicAuth": []}],
+        "responses": {
+          "200": {
+            "description": "成功获取测试用例列表",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TestCase"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "创建测试用例",
+        "description": "手动创建测试用例",
+        "operationId": "addTestCase",
+        "tags": ["测试用例管理模块"],
+        "security": [{"BasicAuth": []}],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateTestCaseRequest"
+              },
+              "example": {
+                "projectId": 1,
+                "testPointId": 1,
+                "title": "登录成功用例",
+                "precondition": "用户已注册",
+                "steps": "1. 打开登录页面\n2. 输入正确的用户名和密码\n3. 点击登录按钮",
+                "expectedResult": "登录成功，跳转到首页",
+                "priority": "HIGH",
+                "caseType": "FUNCTIONAL",
+                "automation": true
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "创建成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TestCase"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/test-cases/project/{projectId}": {
+      "get": {
+        "summary": "按项目获取测试用例",
+        "description": "获取指定项目下的所有测试用例",
+        "operationId": "getTestCasesByProjectId",
+        "tags": ["测试用例管理模块"],
+        "security": [{"BasicAuth": []}],
+        "parameters": [
+          {
+            "name": "projectId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "description": "项目ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功获取测试用例列表",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TestCase"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/test-cases/test-point/{testPointId}": {
+      "get": {
+        "summary": "按测试点获取测试用例",
+        "description": "获取指定测试点下的所有测试用例",
+        "operationId": "getTestCasesByTestPointId",
+        "tags": ["测试用例管理模块"],
+        "security": [{"BasicAuth": []}],
+        "parameters": [
+          {
+            "name": "testPointId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "description": "测试点ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功获取测试用例列表",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TestCase"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/test-cases/{id}": {
+      "get": {
+        "summary": "获取测试用例详情",
+        "description": "根据ID获取测试用例详细信息",
+        "operationId": "getTestCaseById",
+        "tags": ["测试用例管理模块"],
+        "security": [{"BasicAuth": []}],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "description": "用例ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功获取测试用例详情",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TestCase"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "更新测试用例",
+        "description": "更新测试用例信息",
+        "operationId": "updateTestCase",
+        "tags": ["测试用例管理模块"],
+        "security": [{"BasicAuth": []}],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "description": "用例ID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateTestCaseRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "更新成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TestCase"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "删除测试用例",
+        "description": "删除指定测试用例",
+        "operationId": "deleteTestCase",
+        "tags": ["测试用例管理模块"],
+        "security": [{"BasicAuth": []}],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "description": "用例ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "删除成功"
+          }
+        }
+      }
+    },
+    "/api/test-cases/generate": {
+      "post": {
+        "summary": "生成测试用例（单个）",
+        "description": "根据测试点自动生成测试用例（AI生成）",
+        "operationId": "generateTestCases",
+        "tags": ["测试用例管理模块"],
+        "security": [{"BasicAuth": []}],
+        "parameters": [
+          {
+            "name": "projectId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "description": "项目ID"
+          },
+          {
+            "name": "testPointId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "description": "测试点ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "生成成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TestCase"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/test-cases/generate/batch": {
+      "post": {
+        "summary": "批量生成测试用例",
+        "description": "根据多个测试点批量生成测试用例（AI生成）",
+        "operationId": "generateBatchTestCases",
+        "tags": ["测试用例管理模块"],
+        "security": [{"BasicAuth": []}],
+        "parameters": [
+          {
+            "name": "projectId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "description": "项目ID"
+          },
+          {
+            "name": "testPointIds",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "int64"
+              }
+            },
+            "description": "测试点ID列表"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "生成成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TestCase"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/automation/tasks": {
+      "get": {
+        "summary": "获取所有任务",
+        "description": "获取所有执行任务列表",
+        "operationId": "getAllTasks",
+        "tags": ["自动化执行模块"],
+        "security": [{"BasicAuth": []}],
+        "responses": {
+          "200": {
+            "description": "成功获取任务列表",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ExecutionTask"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "创建执行任务",
+        "description": "创建单个执行任务",
+        "operationId": "createTask",
+        "tags": ["自动化执行模块"],
+        "security": [{"BasicAuth": []}],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateTaskRequest"
+              },
+              "example": {
+                "projectId": 1,
+                "testCaseId": 10,
+                "environment": "dev"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "创建成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExecutionTask"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/automation/tasks/project/{projectId}": {
+      "get": {
+        "summary": "按项目获取任务",
+        "description": "获取指定项目下的所有执行任务",
+        "operationId": "getTasksByProjectId",
+        "tags": ["自动化执行模块"],
+        "security": [{"BasicAuth": []}],
+        "parameters": [
+          {
+            "name": "projectId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "description": "项目ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功获取任务列表",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ExecutionTask"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/automation/tasks/batch": {
+      "post": {
+        "summary": "批量创建执行任务",
+        "description": "批量创建执行任务",
+        "operationId": "createBatchTasks",
+        "tags": ["自动化执行模块"],
+        "security": [{"BasicAuth": []}],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateBatchTasksRequest"
+              },
+              "example": {
+                "projectId": 1,
+                "testCaseIds": [10, 11, 12],
+                "environment": "dev"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "创建成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ExecutionTask"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/automation/tasks/{id}/execute": {
+      "post": {
+        "summary": "执行任务",
+        "description": "执行单个任务",
+        "operationId": "executeTask",
+        "tags": ["自动化执行模块"],
+        "security": [{"BasicAuth": []}],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "description": "任务ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "执行成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExecutionResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/automation/tasks/batch/execute": {
+      "post": {
+        "summary": "批量执行任务",
+        "description": "批量执行任务",
+        "operationId": "executeBatchTasks",
+        "tags": ["自动化执行模块"],
+        "security": [{"BasicAuth": []}],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "format": "int64"
+                }
+              },
+              "example": [1, 2, 3]
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "执行成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ExecutionResult"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/automation/results/{taskId}": {
+      "get": {
+        "summary": "获取执行结果",
+        "description": "获取指定任务的执行结果",
+        "operationId": "getExecutionResult",
+        "tags": ["自动化执行模块"],
+        "security": [{"BasicAuth": []}],
+        "parameters": [
+          {
+            "name": "taskId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "description": "任务ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功获取执行结果",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExecutionResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/automation/tasks/{id}/retry": {
+      "post": {
+        "summary": "重试任务",
+        "description": "重新执行失败的任务",
+        "operationId": "retryTask",
+        "tags": ["自动化执行模块"],
+        "security": [{"BasicAuth": []}],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "description": "任务ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "重试成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExecutionTask"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/automation/tasks/{id}/allure-report": {
+      "post": {
+        "summary": "生成Allure报告",
+        "description": "为指定任务生成Allure测试报告",
+        "operationId": "generateAllureReport",
+        "tags": ["自动化执行模块"],
+        "security": [{"BasicAuth": []}],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "description": "任务ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "报告生成成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReportResponse"
+                },
+                "example": {
+                  "reportUrl": "http://localhost:8080/allure-reports/1/index.html"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "报告生成失败",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "错误信息"
+                    }
+                  }
+                },
+                "example": {
+                  "error": "报告生成失败的原因"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "LoginRequest": {
+        "type": "object",
+        "required": ["username", "password"],
+        "properties": {
+          "username": {
+            "type": "string",
+            "description": "用户账号"
+          },
+          "password": {
+            "type": "string",
+            "description": "用户密码"
+          }
+        }
+      },
+      "LoginResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "description": "登录是否成功"
+          },
+          "message": {
+            "type": "string",
+            "description": "响应消息"
+          },
+          "authorization": {
+            "type": "string",
+            "description": "Basic认证令牌"
+          },
+          "username": {
+            "type": "string",
+            "description": "用户名"
+          }
+        }
+      },
+      "Project": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "description": "项目ID"
+          },
+          "name": {
+            "type": "string",
+            "description": "项目名称"
+          },
+          "description": {
+            "type": "string",
+            "description": "项目描述"
+          },
+          "owner": {
+            "type": "string",
+            "description": "项目负责人"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["ACTIVE", "ARCHIVED"],
+            "description": "项目状态"
+          },
+          "reviewStatus": {
+            "type": "string",
+            "enum": ["UNREVIEWED", "REVIEWED"],
+            "description": "评审状态"
+          },
+          "projectCode": {
+            "type": "string",
+            "description": "项目编码"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "创建时间"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "更新时间"
+          }
+        }
+      },
+      "ProjectSummary": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "description": "项目ID"
+          },
+          "name": {
+            "type": "string",
+            "description": "项目名称"
+          },
+          "description": {
+            "type": "string",
+            "description": "项目描述"
+          },
+          "owner": {
+            "type": "string",
+            "description": "项目负责人"
+          },
+          "status": {
+            "type": "string",
+            "description": "项目状态"
+          },
+          "projectCode": {
+            "type": "string",
+            "description": "项目编码"
+          }
+        }
+      },
+      "CreateProjectRequest": {
+        "type": "object",
+        "required": ["name"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "项目名称"
+          },
+          "description": {
+            "type": "string",
+            "description": "项目描述"
+          },
+          "owner": {
+            "type": "string",
+            "description": "项目负责人"
+          }
+        }
+      },
+      "Requirement": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "description": "需求ID"
+          },
+          "projectId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "所属项目ID"
+          },
+          "name": {
+            "type": "string",
+            "description": "需求名称"
+          },
+          "fileUrl": {
+            "type": "string",
+            "description": "需求文件URL"
+          },
+          "version": {
+            "type": "string",
+            "description": "版本号"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["PENDING_ANALYSIS", "ANALYZING", "ANALYZED", "CONFIRMED"],
+            "description": "状态"
+          },
+          "testPointCount": {
+            "type": "integer",
+            "format": "int32",
+            "description": "测试点数量"
+          },
+          "owner": {
+            "type": "string",
+            "description": "负责人"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "创建时间"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "更新时间"
+          }
+        }
+      },
+      "TestPoint": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "description": "测试点ID"
+          },
+          "projectId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "所属项目ID"
+          },
+          "requirementId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "所属需求ID"
+          },
+          "requirementItemId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "需求项ID"
+          },
+          "pointCode": {
+            "type": "string",
+            "description": "测试点编码"
+          },
+          "pointName": {
+            "type": "string",
+            "description": "测试点名称"
+          },
+          "pointType": {
+            "type": "string",
+            "description": "测试点类型"
+          },
+          "name": {
+            "type": "string",
+            "description": "名称"
+          },
+          "function": {
+            "type": "string",
+            "description": "功能描述"
+          },
+          "sceneType": {
+            "type": "string",
+            "description": "场景类型"
+          },
+          "riskLevel": {
+            "type": "string",
+            "description": "风险等级"
+          },
+          "businessRule": {
+            "type": "string",
+            "description": "业务规则"
+          },
+          "description": {
+            "type": "string",
+            "description": "描述"
+          },
+          "automationSuggested": {
+            "type": "boolean",
+            "description": "是否建议自动化"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "创建时间"
+          },
+          "createdBy": {
+            "type": "integer",
+            "format": "int64",
+            "description": "创建人ID"
+          }
+        }
+      },
+      "CreateTestPointRequest": {
+        "type": "object",
+        "required": ["projectId", "requirementId", "pointName"],
+        "properties": {
+          "projectId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "所属项目ID"
+          },
+          "requirementId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "所属需求ID"
+          },
+          "requirementItemId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "需求项ID"
+          },
+          "pointName": {
+            "type": "string",
+            "description": "测试点名称"
+          },
+          "pointType": {
+            "type": "string",
+            "description": "测试点类型"
+          },
+          "function": {
+            "type": "string",
+            "description": "功能描述"
+          },
+          "sceneType": {
+            "type": "string",
+            "description": "场景类型"
+          },
+          "riskLevel": {
+            "type": "string",
+            "description": "风险等级"
+          },
+          "businessRule": {
+            "type": "string",
+            "description": "业务规则"
+          },
+          "description": {
+            "type": "string",
+            "description": "描述"
+          },
+          "automationSuggested": {
+            "type": "boolean",
+            "description": "是否建议自动化"
+          }
+        }
+      },
+      "TestCase": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "description": "用例ID"
+          },
+          "projectId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "所属项目ID"
+          },
+          "testPointId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "所属测试点ID"
+          },
+          "caseType": {
+            "type": "string",
+            "enum": ["FUNCTIONAL", "API", "UI", "PERFORMANCE"],
+            "description": "用例类型"
+          },
+          "caseNumber": {
+            "type": "string",
+            "description": "用例编号"
+          },
+          "caseCode": {
+            "type": "string",
+            "description": "用例编码"
+          },
+          "title": {
+            "type": "string",
+            "description": "用例标题"
+          },
+          "precondition": {
+            "type": "string",
+            "description": "前置条件"
+          },
+          "steps": {
+            "type": "string",
+            "description": "测试步骤"
+          },
+          "expectedResult": {
+            "type": "string",
+            "description": "预期结果"
+          },
+          "priority": {
+            "type": "string",
+            "enum": ["HIGH", "MEDIUM", "LOW"],
+            "description": "优先级"
+          },
+          "automation": {
+            "type": "boolean",
+            "description": "是否自动化"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["PENDING_REVIEW", "REVIEWED", "APPROVED", "REJECTED"],
+            "description": "状态"
+          },
+          "creator": {
+            "type": "string",
+            "description": "创建人"
+          },
+          "createdBy": {
+            "type": "integer",
+            "format": "int64",
+            "description": "创建人ID"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "创建时间"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "更新时间"
+          }
+        }
+      },
+      "CreateTestCaseRequest": {
+        "type": "object",
+        "required": ["projectId", "testPointId", "title"],
+        "properties": {
+          "projectId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "所属项目ID"
+          },
+          "testPointId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "所属测试点ID"
+          },
+          "title": {
+            "type": "string",
+            "description": "用例标题"
+          },
+          "precondition": {
+            "type": "string",
+            "description": "前置条件"
+          },
+          "steps": {
+            "type": "string",
+            "description": "测试步骤"
+          },
+          "expectedResult": {
+            "type": "string",
+            "description": "预期结果"
+          },
+          "priority": {
+            "type": "string",
+            "description": "优先级"
+          },
+          "caseType": {
+            "type": "string",
+            "description": "用例类型"
+          },
+          "automation": {
+            "type": "boolean",
+            "description": "是否自动化"
+          }
+        }
+      },
+      "ExecutionTask": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "description": "任务ID"
+          },
+          "projectId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "所属项目ID"
+          },
+          "testCaseId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "测试用例ID"
+          },
+          "planId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "计划ID"
+          },
+          "taskNo": {
+            "type": "string",
+            "description": "任务编号"
+          },
+          "taskType": {
+            "type": "string",
+            "description": "任务类型"
+          },
+          "runnerType": {
+            "type": "string",
+            "description": "执行器类型"
+          },
+          "environment": {
+            "type": "string",
+            "description": "执行环境"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["PENDING", "RUNNING", "COMPLETED", "FAILED"],
+            "description": "状态"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "创建时间"
+          },
+          "executedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "执行时间"
+          }
+        }
+      },
+      "CreateTaskRequest": {
+        "type": "object",
+        "required": ["projectId", "testCaseId", "environment"],
+        "properties": {
+          "projectId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "项目ID"
+          },
+          "testCaseId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "测试用例ID"
+          },
+          "environment": {
+            "type": "string",
+            "description": "执行环境"
+          }
+        }
+      },
+      "CreateBatchTasksRequest": {
+        "type": "object",
+        "required": ["projectId", "testCaseIds", "environment"],
+        "properties": {
+          "projectId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "项目ID"
+          },
+          "testCaseIds": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "description": "测试用例ID列表"
+          },
+          "environment": {
+            "type": "string",
+            "description": "执行环境"
+          }
+        }
+      },
+      "ExecutionResult": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "description": "结果ID"
+          },
+          "taskId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "关联任务ID"
+          },
+          "requestUrl": {
+            "type": "string",
+            "description": "请求URL"
+          },
+          "requestMethod": {
+            "type": "string",
+            "description": "请求方法"
+          },
+          "requestHeaders": {
+            "type": "string",
+            "description": "请求头"
+          },
+          "requestBody": {
+            "type": "string",
+            "description": "请求体"
+          },
+          "responseStatus": {
+            "type": "integer",
+            "format": "int32",
+            "description": "响应状态码"
+          },
+          "responseBody": {
+            "type": "string",
+            "description": "响应体"
+          },
+          "assertionResult": {
+            "type": "string",
+            "description": "断言结果"
+          },
+          "llmAnalysis": {
+            "type": "string",
+            "description": "AI分析结果"
+          },
+          "result": {
+            "type": "string",
+            "description": "执行结果"
+          },
+          "errorMessage": {
+            "type": "string",
+            "description": "错误信息"
+          },
+          "reportUrl": {
+            "type": "string",
+            "description": "报告URL"
+          },
+          "executedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "执行时间"
+          }
+        }
+      },
+      "ReportResponse": {
+        "type": "object",
+        "properties": {
+          "reportUrl": {
+            "type": "string",
+            "description": "报告访问URL"
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "BasicAuth": {
+        "type": "http",
+        "scheme": "basic",
+        "description": "Basic认证，格式为 `Basic Base64(username:password)`"
+      }
+    }
+  },
+  "security": [
+    {
+      "BasicAuth": []
+    }
+  ]
+}

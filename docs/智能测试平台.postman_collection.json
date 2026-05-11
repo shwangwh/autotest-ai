@@ -1,0 +1,1703 @@
+{
+  "info": {
+    "name": "智能测试平台 API",
+    "description": "智能测试平台完整接口集合，包含认证、项目管理、需求管理、测试点管理、测试用例管理、自动化执行六大模块",
+    "schema": "https://schema.getpostman.com/collection/v2.1.0/json/collection.json",
+    "version": "1.0.0"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080",
+      "type": "string"
+    },
+    {
+      "key": "authorization",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "username",
+      "value": "admin",
+      "type": "string"
+    },
+    {
+      "key": "password",
+      "value": "123456",
+      "type": "string"
+    },
+    {
+      "key": "projectId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "requirementId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "testPointId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "testCaseId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "taskId",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "01-认证模块",
+      "item": [
+        {
+          "name": "登录 - 成功",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"{{username}}\",\n  \"password\": \"{{password}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "login"]
+            },
+            "description": "用户登录获取认证令牌"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Login successful\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.success).to.eql(true);",
+                  "    pm.expect(jsonData).to.have.property('authorization');",
+                  "    pm.expect(jsonData).to.have.property('username');",
+                  "    pm.environment.set(\"authorization\", jsonData.authorization);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "登录 - 密码为空",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"admin\",\n  \"password\": \"\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "login"]
+            },
+            "description": "密码为空时登录失败"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Login failed - missing password\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.success).to.eql(false);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "登录 - 账号不存在",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"nonexistent_user\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "login"]
+            },
+            "description": "账号不存在时登录失败"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Login failed - invalid credentials\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.success).to.eql(false);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "02-项目管理模块",
+      "item": [
+        {
+          "name": "获取所有项目",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{authorization}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/projects",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "projects"]
+            },
+            "description": "获取所有项目列表"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response is an array\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an('array');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "获取项目详情",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{authorization}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/projects/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "projects", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{projectId}}"
+                }
+              ]
+            },
+            "description": "根据ID获取项目详细信息"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response has project fields\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('id');",
+                  "    pm.expect(jsonData).to.have.property('name');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "创建项目 - 成功",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{authorization}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"测试项目\",\n  \"description\": \"这是一个测试项目\",\n  \"owner\": \"admin\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/projects",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "projects"]
+            },
+            "description": "创建新项目"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Project created successfully\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('id');",
+                  "    pm.expect(jsonData.name).to.eql('测试项目');",
+                  "    pm.environment.set(\"projectId\", jsonData.id);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "更新项目",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{authorization}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"更新后的项目名称\",\n  \"description\": \"更新后的描述\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/projects/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "projects", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{projectId}}"
+                }
+              ]
+            },
+            "description": "更新项目信息"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Project updated\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.name).to.eql('更新后的项目名称');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "删除项目",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{authorization}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/projects/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "projects", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{projectId}}"
+                }
+              ]
+            },
+            "description": "删除指定项目"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "03-需求管理模块",
+      "item": [
+        {
+          "name": "获取所有需求",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{authorization}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/requirements",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "requirements"]
+            },
+            "description": "获取所有需求列表"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response is an array\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an('array');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "按项目获取需求",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{authorization}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/requirements/project/:projectId",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "requirements", "project", ":projectId"],
+              "variable": [
+                {
+                  "key": "projectId",
+                  "value": "{{projectId}}"
+                }
+              ]
+            },
+            "description": "获取指定项目下的所有需求"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response is an array\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an('array');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "获取需求详情",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{authorization}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/requirements/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "requirements", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{requirementId}}"
+                }
+              ]
+            },
+            "description": "根据ID获取需求详细信息"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response has requirement fields\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('id');",
+                  "    pm.expect(jsonData).to.have.property('name');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "上传需求文件",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{authorization}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": "/path/to/your/requirement.docx"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/requirements/upload?projectId={{projectId}}&name=需求文档&version=v1.0",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "requirements", "upload"],
+              "query": [
+                {
+                  "key": "projectId",
+                  "value": "{{projectId}}"
+                },
+                {
+                  "key": "name",
+                  "value": "需求文档"
+                },
+                {
+                  "key": "version",
+                  "value": "v1.0"
+                }
+              ]
+            },
+            "description": "上传需求文档文件"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Requirement uploaded\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('id');",
+                  "    pm.environment.set(\"requirementId\", jsonData.id);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "生成测试点",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{authorization}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/requirements/:id/generate-test-points",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "requirements", ":id", "generate-test-points"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{requirementId}}"
+                }
+              ]
+            },
+            "description": "根据需求自动生成测试点（AI分析）"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Test points generated\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an('array');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "确认测试点",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{authorization}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/requirements/:id/confirm-test-points",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "requirements", ":id", "confirm-test-points"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{requirementId}}"
+                }
+              ]
+            },
+            "description": "确认需求关联的测试点"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "04-测试点管理模块",
+      "item": [
+        {
+          "name": "获取所有测试点",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{authorization}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/test-points",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "test-points"]
+            },
+            "description": "获取所有测试点列表"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response is an array\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an('array');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "按需求获取测试点",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{authorization}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/test-points/requirement/:requirementId",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "test-points", "requirement", ":requirementId"],
+              "variable": [
+                {
+                  "key": "requirementId",
+                  "value": "{{requirementId}}"
+                }
+              ]
+            },
+            "description": "获取指定需求下的所有测试点"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response is an array\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an('array');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "按项目获取测试点",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{authorization}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/test-points/project/:projectId",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "test-points", "project", ":projectId"],
+              "variable": [
+                {
+                  "key": "projectId",
+                  "value": "{{projectId}}"
+                }
+              ]
+            },
+            "description": "获取指定项目下的所有测试点"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response is an array\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an('array');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "创建测试点",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{authorization}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"projectId\": {{projectId}},\n  \"requirementId\": {{requirementId}},\n  \"pointName\": \"登录功能测试点\",\n  \"pointType\": \"FUNCTIONAL\",\n  \"function\": \"用户登录\",\n  \"sceneType\": \"NORMAL\",\n  \"riskLevel\": \"HIGH\",\n  \"businessRule\": \"用户必须使用正确的账号密码登录\",\n  \"description\": \"验证用户登录功能\",\n  \"automationSuggested\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/test-points",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "test-points"]
+            },
+            "description": "创建新的测试点"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Test point created\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('id');",
+                  "    pm.environment.set(\"testPointId\", jsonData.id);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "更新测试点",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{authorization}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"pointName\": \"更新后的测试点名称\",\n  \"description\": \"更新后的描述\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/test-points/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "test-points", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{testPointId}}"
+                }
+              ]
+            },
+            "description": "更新测试点信息"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Test point updated\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.pointName).to.eql('更新后的测试点名称');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "删除测试点",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{authorization}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/test-points/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "test-points", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{testPointId}}"
+                }
+              ]
+            },
+            "description": "删除指定测试点"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "05-测试用例管理模块",
+      "item": [
+        {
+          "name": "获取所有测试用例",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{authorization}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/test-cases",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "test-cases"]
+            },
+            "description": "获取所有测试用例列表"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response is an array\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an('array');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "按项目获取测试用例",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{authorization}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/test-cases/project/:projectId",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "test-cases", "project", ":projectId"],
+              "variable": [
+                {
+                  "key": "projectId",
+                  "value": "{{projectId}}"
+                }
+              ]
+            },
+            "description": "获取指定项目下的所有测试用例"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response is an array\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an('array');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "按测试点获取测试用例",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{authorization}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/test-cases/test-point/:testPointId",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "test-cases", "test-point", ":testPointId"],
+              "variable": [
+                {
+                  "key": "testPointId",
+                  "value": "{{testPointId}}"
+                }
+              ]
+            },
+            "description": "获取指定测试点下的所有测试用例"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response is an array\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an('array');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "获取测试用例详情",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{authorization}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/test-cases/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "test-cases", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{testCaseId}}"
+                }
+              ]
+            },
+            "description": "根据ID获取测试用例详细信息"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response has test case fields\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('id');",
+                  "    pm.expect(jsonData).to.have.property('title');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "生成测试用例（单个）",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{authorization}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/test-cases/generate?projectId={{projectId}}&testPointId={{testPointId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "test-cases", "generate"],
+              "query": [
+                {
+                  "key": "projectId",
+                  "value": "{{projectId}}"
+                },
+                {
+                  "key": "testPointId",
+                  "value": "{{testPointId}}"
+                }
+              ]
+            },
+            "description": "根据测试点自动生成测试用例（AI生成）"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Test cases generated\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an('array');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "批量生成测试用例",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{authorization}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/test-cases/generate/batch?projectId={{projectId}}&testPointIds=1,2,3",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "test-cases", "generate", "batch"],
+              "query": [
+                {
+                  "key": "projectId",
+                  "value": "{{projectId}}"
+                },
+                {
+                  "key": "testPointIds",
+                  "value": "1,2,3"
+                }
+              ]
+            },
+            "description": "根据多个测试点批量生成测试用例（AI生成）"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Test cases batch generated\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an('array');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "创建测试用例",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{authorization}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"projectId\": {{projectId}},\n  \"testPointId\": {{testPointId}},\n  \"title\": \"登录成功用例\",\n  \"precondition\": \"用户已注册\",\n  \"steps\": \"1. 打开登录页面\\n2. 输入正确的用户名和密码\\n3. 点击登录按钮\",\n  \"expectedResult\": \"登录成功，跳转到首页\",\n  \"priority\": \"HIGH\",\n  \"caseType\": \"FUNCTIONAL\",\n  \"automation\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/test-cases",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "test-cases"]
+            },
+            "description": "手动创建测试用例"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Test case created\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('id');",
+                  "    pm.environment.set(\"testCaseId\", jsonData.id);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "更新测试用例",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{authorization}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"更新后的用例标题\",\n  \"priority\": \"HIGH\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/test-cases/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "test-cases", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{testCaseId}}"
+                }
+              ]
+            },
+            "description": "更新测试用例信息"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Test case updated\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.title).to.eql('更新后的用例标题');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "删除测试用例",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{authorization}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/test-cases/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "test-cases", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{testCaseId}}"
+                }
+              ]
+            },
+            "description": "删除指定测试用例"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "06-自动化执行模块",
+      "item": [
+        {
+          "name": "获取所有任务",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{authorization}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/automation/tasks",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "automation", "tasks"]
+            },
+            "description": "获取所有执行任务列表"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response is an array\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an('array');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "按项目获取任务",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{authorization}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/automation/tasks/project/:projectId",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "automation", "tasks", "project", ":projectId"],
+              "variable": [
+                {
+                  "key": "projectId",
+                  "value": "{{projectId}}"
+                }
+              ]
+            },
+            "description": "获取指定项目下的所有执行任务"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response is an array\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an('array');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "创建执行任务",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{authorization}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"projectId\": {{projectId}},\n  \"testCaseId\": {{testCaseId}},\n  \"environment\": \"dev\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/automation/tasks",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "automation", "tasks"]
+            },
+            "description": "创建单个执行任务"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Task created\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('id');",
+                  "    pm.environment.set(\"taskId\", jsonData.id);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "批量创建执行任务",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{authorization}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"projectId\": {{projectId}},\n  \"testCaseIds\": [1, 2, 3],\n  \"environment\": \"dev\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/automation/tasks/batch",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "automation", "tasks", "batch"]
+            },
+            "description": "批量创建执行任务"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Batch tasks created\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an('array');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "执行任务",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{authorization}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/automation/tasks/:id/execute",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "automation", "tasks", ":id", "execute"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{taskId}}"
+                }
+              ]
+            },
+            "description": "执行单个任务"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Task executed\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('id');",
+                  "    pm.expect(jsonData).to.have.property('taskId');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "批量执行任务",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{authorization}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "[1, 2, 3]"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/automation/tasks/batch/execute",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "automation", "tasks", "batch", "execute"]
+            },
+            "description": "批量执行任务"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Batch tasks executed\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an('array');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "获取执行结果",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{authorization}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/automation/results/:taskId",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "automation", "results", ":taskId"],
+              "variable": [
+                {
+                  "key": "taskId",
+                  "value": "{{taskId}}"
+                }
+              ]
+            },
+            "description": "获取指定任务的执行结果"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response has result fields\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('id');",
+                  "    pm.expect(jsonData).to.have.property('taskId');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "重试任务",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{authorization}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/automation/tasks/:id/retry",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "automation", "tasks", ":id", "retry"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{taskId}}"
+                }
+              ]
+            },
+            "description": "重新执行失败的任务"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Task retried\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('id');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "生成Allure报告",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{authorization}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/automation/tasks/:id/allure-report",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "automation", "tasks", ":id", "allure-report"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{taskId}}"
+                }
+              ]
+            },
+            "description": "为指定任务生成Allure测试报告"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Report generated\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('reportUrl');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

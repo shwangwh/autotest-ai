@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="MeterSphere 按钮组件展示页 - 精准复刻 MeterSphere 系统风格">
+  <title>MeterSphere 按钮组件展示</title>
+  <link rel="stylesheet" href="metersphere-buttons.css">
+  <style>
+    /* === 展示页专用样式 === */
+    .demo-section {
+      margin-bottom: 32px;
+    }
+    .demo-section__title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--ms-text-1);
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--ms-border);
+    }
+    .demo-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+    .demo-label {
+      width: 100px;
+      font-size: 12px;
+      color: var(--ms-text-3);
+      flex-shrink: 0;
+      text-align: right;
+    }
+    .demo-page-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--ms-primary);
+      margin-bottom: 4px;
+    }
+    .demo-page-subtitle {
+      font-size: 13px;
+      color: var(--ms-text-3);
+      margin-bottom: 24px;
+    }
+
+    /* SVG Icons inline */
+    .icon-svg {
+      width: 16px;
+      height: 16px;
+      fill: currentColor;
+      flex-shrink: 0;
+    }
+    .icon-svg--sm {
+      width: 14px;
+      height: 14px;
+    }
+    .icon-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      display: inline-block;
+      margin-right: 4px;
+    }
+    .icon-dot--success { background: var(--ms-success); }
+    .icon-dot--danger  { background: var(--ms-danger); }
+    .icon-dot--default { background: var(--ms-text-3); }
+  </style>
+</head>
+<body>
+  <div class="ms-layout" style="display:flex; flex-direction: column; height: 100vh;">
+
+    <!-- ========== 顶部导航栏 ========== -->
+    <header class="ms-header" style="position: relative;">
+      <a class="ms-header__logo" href="#">
+        <span class="ms-header__logo-icon">MS</span>
+        MeterSphere
+      </a>
+      <nav class="ms-header__nav">
+        <a class="ms-header__nav-item" href="#">工作台</a>
+        <a class="ms-header__nav-item is-active" href="#">用例</a>
+        <a class="ms-header__nav-item" href="#">缺陷</a>
+        <a class="ms-header__nav-item" href="#">接口测试</a>
+      </nav>
+      <div class="ms-header__actions">
+        <span class="ms-header__action-icon" title="通知">🔔</span>
+        <span class="ms-header__action-icon" title="帮助">❓</span>
+        <span class="ms-header__action-icon" title="设置">⚙️</span>
+      </div>
+    </header>
+
+    <div style="display: flex; flex: 1; margin-top: 0;">
+
+      <!-- ========== 侧边栏 ========== -->
+      <aside class="ms-sidebar" style="position: relative; top: 0; flex-shrink: 0;">
+        <a class="ms-sidebar__item" href="#">
+          <span class="ms-sidebar__icon">📊</span>
+          工作台
+        </a>
+        <a class="ms-sidebar__item" href="#">
+          <span class="ms-sidebar__icon">📁</span>
+          项目管理
+        </a>
+        <a class="ms-sidebar__item" href="#">
+          <span class="ms-sidebar__icon">📋</span>
+          测试计划
+        </a>
+        <a class="ms-sidebar__item is-active" href="#">
+          <span class="ms-sidebar__icon">📝</span>
+          测试用例
+        </a>
+        <a class="ms-sidebar__item" href="#">
+          <span class="ms-sidebar__icon">🔌</span>
+          接口测试
+        </a>
+        <a class="ms-sidebar__item" href="#">
+          <span class="ms-sidebar__icon">🐛</span>
+          缺陷管理
+        </a>
+        <hr class="ms-sidebar__divider">
+        <a class="ms-sidebar__item" href="#">
+          <span class="ms-sidebar__icon">⚙️</span>
+          系统设置
+        </a>
+      </aside>
+
+      <!-- ========== 主内容区 ========== -->
+      <main class="ms-main" style="margin-left: 0; margin-top: 0; flex: 1;">
+
+        <!-- 面包屑 -->
+        <div class="ms-breadcrumb">
+          <a class="ms-breadcrumb__item" href="#">功能用例</a>
+          <span class="ms-breadcrumb__separator">/</span>
+          <span class="ms-breadcrumb__item is-current">按钮组件展示</span>
+        </div>
+
+        <!-- ==================== -->
+        <!-- 按钮展示区域           -->
+        <!-- ==================== -->
+        <div class="ms-content-card">
+          <div class="demo-page-title">按钮组件 Button</div>
+          <div class="demo-page-subtitle">MeterSphere 设计系统 — 按钮规范完整复刻</div>
+
+          <!-- Section 1: 基础按钮 -->
+          <div class="demo-section">
+            <div class="demo-section__title">基础按钮类型</div>
+            <div class="demo-row">
+              <span class="demo-label">主按钮</span>
+              <button class="ms-btn ms-btn--primary" id="btn-primary">新建</button>
+              <button class="ms-btn ms-btn--primary" id="btn-primary-save">保存</button>
+              <button class="ms-btn ms-btn--primary" id="btn-primary-create">创建</button>
+            </div>
+            <div class="demo-row">
+              <span class="demo-label">边框按钮</span>
+              <button class="ms-btn ms-btn--outline" id="btn-outline">导入</button>
+              <button class="ms-btn ms-btn--outline" id="btn-outline-export">导出</button>
+              <button class="ms-btn ms-btn--outline" id="btn-outline-cancel">保存并继续创建</button>
+            </div>
+            <div class="demo-row">
+              <span class="demo-label">次要按钮</span>
+              <button class="ms-btn ms-btn--secondary" id="btn-secondary">取消</button>
+              <button class="ms-btn ms-btn--secondary" id="btn-secondary-close">关闭</button>
+              <button class="ms-btn ms-btn--secondary" id="btn-secondary-reset">重置</button>
+            </div>
+            <div class="demo-row">
+              <span class="demo-label">危险按钮</span>
+              <button class="ms-btn ms-btn--danger" id="btn-danger">删除</button>
+              <button class="ms-btn ms-btn--danger" id="btn-danger-leave">离开</button>
+            </div>
+            <div class="demo-row">
+              <span class="demo-label">危险边框</span>
+              <button class="ms-btn ms-btn--danger-outline" id="btn-danger-outline">批量删除</button>
+            </div>
+          </div>
+
+          <hr class="ms-divider">
+
+          <!-- Section 2: 文字和链接按钮 -->
+          <div class="demo-section">
+            <div class="demo-section__title">文字按钮 / 链接按钮</div>
+            <div class="demo-row">
+              <span class="demo-label">文字按钮</span>
+              <button class="ms-btn ms-btn--text" id="btn-text">编辑</button>
+              <button class="ms-btn ms-btn--text" id="btn-text-copy">复制</button>
+              <button class="ms-btn ms-btn--text" id="btn-text-move">移动</button>
+              <button class="ms-btn ms-btn--text" id="btn-text-more">更多</button>
+            </div>
+            <div class="demo-row">
+              <span class="demo-label">次要文字</span>
+              <button class="ms-btn ms-btn--text-secondary" id="btn-text-sec">留下</button>
+              <button class="ms-btn ms-btn--text-secondary" id="btn-text-sec-view">查看详情</button>
+            </div>
+            <div class="demo-row">
+              <span class="demo-label">链接按钮</span>
+              <button class="ms-btn ms-btn--link" id="btn-link">查看全部 &gt;</button>
+              <button class="ms-btn ms-btn--link" id="btn-link-help">帮助文档</button>
+            </div>
+          </div>
+
+          <hr class="ms-divider">
+
+          <!-- Section 3: 图标按钮 -->
+          <div class="demo-section">
+            <div class="demo-section__title">图标按钮</div>
+            <div class="demo-row">
+              <span class="demo-label">纯图标</span>
+              <button class="ms-btn ms-btn--icon" id="btn-icon-search" title="搜索">🔍</button>
+              <button class="ms-btn ms-btn--icon" id="btn-icon-filter" title="筛选">☰</button>
+              <button class="ms-btn ms-btn--icon" id="btn-icon-refresh" title="刷新">🔄</button>
+              <button class="ms-btn ms-btn--icon" id="btn-icon-more" title="更多">⋮</button>
+              <button class="ms-btn ms-btn--icon" id="btn-icon-close" title="关闭">✕</button>
+              <button class="ms-btn ms-btn--icon" id="btn-icon-add" title="新增">✚</button>
+            </div>
+            <div class="demo-row">
+              <span class="demo-label">图标+文字</span>
+              <button class="ms-btn ms-btn--primary" id="btn-icon-text-add">✚ 新建用例</button>
+              <button class="ms-btn ms-btn--outline" id="btn-icon-text-import">⬇ 导入</button>
+              <button class="ms-btn ms-btn--secondary" id="btn-icon-text-export">⬆ 导出</button>
+            </div>
+          </div>
+
+          <hr class="ms-divider">
+
+          <!-- Section 4: 按钮尺寸 -->
+          <div class="demo-section">
+            <div class="demo-section__title">按钮尺寸</div>
+            <div class="demo-row" style="align-items: flex-end;">
+              <span class="demo-label">四种尺寸</span>
+              <button class="ms-btn ms-btn--primary ms-btn--mini" id="btn-size-mini">Mini</button>
+              <button class="ms-btn ms-btn--primary ms-btn--small" id="btn-size-small">Small</button>
+              <button class="ms-btn ms-btn--primary" id="btn-size-medium">Medium</button>
+              <button class="ms-btn ms-btn--primary ms-btn--large" id="btn-size-large">Large</button>
+            </div>
+            <div class="demo-row" style="align-items: flex-end;">
+              <span class="demo-label">边框尺寸</span>
+              <button class="ms-btn ms-btn--outline ms-btn--mini" id="btn-size-outline-mini">Mini</button>
+              <button class="ms-btn ms-btn--outline ms-btn--small" id="btn-size-outline-small">Small</button>
+              <button class="ms-btn ms-btn--outline" id="btn-size-outline-medium">Medium</button>
+              <button class="ms-btn ms-btn--outline ms-btn--large" id="btn-size-outline-large">Large</button>
+            </div>
+          </div>
+
+          <hr class="ms-divider">
+
+          <!-- Section 5: 禁用状态 -->
+          <div class="demo-section">
+            <div class="demo-section__title">禁用状态</div>
+            <div class="demo-row">
+              <span class="demo-label">禁用主按钮</span>
+              <button class="ms-btn ms-btn--primary" disabled id="btn-disabled-primary">新建</button>
+            </div>
+            <div class="demo-row">
+              <span class="demo-label">禁用边框</span>
+              <button class="ms-btn ms-btn--outline" disabled id="btn-disabled-outline">导入</button>
+            </div>
+            <div class="demo-row">
+              <span class="demo-label">禁用次要</span>
+              <button class="ms-btn ms-btn--secondary" disabled id="btn-disabled-secondary">取消</button>
+            </div>
+            <div class="demo-row">
+              <span class="demo-label">禁用危险</span>
+              <button class="ms-btn ms-btn--danger" disabled id="btn-disabled-danger">删除</button>
+            </div>
+            <div class="demo-row">
+              <span class="demo-label">禁用文字</span>
+              <button class="ms-btn ms-btn--text" disabled id="btn-disabled-text">编辑</button>
+            </div>
+          </div>
+
+          <hr class="ms-divider">
+
+          <!-- Section 6: 按钮组合场景 -->
+          <div class="demo-section">
+            <div class="demo-section__title">典型场景 — 按钮组合</div>
+
+            <!-- 场景1: 工具栏 -->
+            <div style="margin-bottom: 24px;">
+              <div style="font-size: 13px; color: var(--ms-text-3); margin-bottom: 8px;">▸ 用例列表操作栏</div>
+              <div class="ms-toolbar" style="background: var(--ms-bg-2); padding: 12px 16px; border-radius: 4px;">
+                <div class="ms-toolbar__left">
+                  <button class="ms-btn ms-btn--primary" id="scene-btn-new">新建</button>
+                  <button class="ms-btn ms-btn--outline" id="scene-btn-import">导入</button>
+                </div>
+                <div class="ms-toolbar__right">
+                  <div class="ms-input" style="width: 220px;">
+                    <input type="text" class="ms-input__inner" placeholder="通过 ID/名称/标签搜索">
+                    <span class="ms-input__suffix">🔍</span>
+                  </div>
+                  <button class="ms-btn ms-btn--icon" id="scene-btn-grid" title="视图切换">☰</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- 场景2: 对话框底部 -->
+            <div style="margin-bottom: 24px;">
+              <div style="font-size: 13px; color: var(--ms-text-3); margin-bottom: 8px;">▸ 创建用例底部操作栏</div>
+              <div style="display: flex; justify-content: flex-end; gap: 8px; background: var(--ms-bg-1); padding: 12px 16px; border: 1px solid var(--ms-border); border-radius: 4px;">
+                <button class="ms-btn ms-btn--secondary" id="scene-btn-cancel">取消</button>
+                <button class="ms-btn ms-btn--outline" id="scene-btn-save-continue">保存并继续创建</button>
+                <button class="ms-btn ms-btn--primary" id="scene-btn-create">创建</button>
+              </div>
+            </div>
+
+            <!-- 场景3: 确认对话框 -->
+            <div style="margin-bottom: 24px;">
+              <div style="font-size: 13px; color: var(--ms-text-3); margin-bottom: 8px;">▸ 确认对话框</div>
+              <div style="background: var(--ms-bg-1); padding: 20px 24px; border-radius: 4px; box-shadow: var(--ms-shadow-modal); max-width: 440px;">
+                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                  <span style="color: var(--ms-warning); font-size: 18px;">⚠️</span>
+                  <span style="font-size: 16px; font-weight: 600; color: var(--ms-text-1);">离开此页面？</span>
+                </div>
+                <p style="color: var(--ms-text-2); font-size: 14px; margin-bottom: 16px; padding-left: 26px;">系统不会保存您所做的更改</p>
+                <div style="display: flex; justify-content: flex-end; gap: 8px;">
+                  <button class="ms-btn ms-btn--secondary" id="scene-btn-stay">留下</button>
+                  <button class="ms-btn ms-btn--primary" id="scene-btn-leave">离开</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- 场景4: 表格行操作 -->
+            <div>
+              <div style="font-size: 13px; color: var(--ms-text-3); margin-bottom: 8px;">▸ 表格行内操作按钮</div>
+              <div style="background: var(--ms-bg-1); border: 1px solid var(--ms-border); border-radius: 4px; overflow: hidden;">
+                <table class="ms-table">
+                  <thead>
+                    <tr>
+                      <th style="width: 40px;"><input type="checkbox" class="ms-table__checkbox"></th>
+                      <th>ID</th>
+                      <th>用例名称</th>
+                      <th>评审结果</th>
+                      <th>操作</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td><input type="checkbox" class="ms-table__checkbox" checked></td>
+                      <td>100009</td>
+                      <td><a class="ms-btn ms-btn--link">登录-验证码登录</a></td>
+                      <td><span class="ms-tag ms-tag--default"><span class="icon-dot icon-dot--default"></span>未评审</span></td>
+                      <td>
+                        <div class="ms-table__actions">
+                          <button class="ms-btn ms-btn--text ms-btn--mini" id="table-btn-edit">编辑</button>
+                          <span class="ms-divider--vertical"></span>
+                          <button class="ms-btn ms-btn--text ms-btn--mini" id="table-btn-copy">复制</button>
+                          <span class="ms-divider--vertical"></span>
+                          <button class="ms-btn ms-btn--text ms-btn--mini" id="table-btn-more" style="color: var(--ms-text-3);">更多</button>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td><input type="checkbox" class="ms-table__checkbox"></td>
+                      <td>100008</td>
+                      <td><a class="ms-btn ms-btn--link">登录-密码登录验证</a></td>
+                      <td><span class="ms-tag ms-tag--success"><span class="icon-dot icon-dot--success"></span>已通过</span></td>
+                      <td>
+                        <div class="ms-table__actions">
+                          <button class="ms-btn ms-btn--text ms-btn--mini">编辑</button>
+                          <span class="ms-divider--vertical"></span>
+                          <button class="ms-btn ms-btn--text ms-btn--mini">复制</button>
+                          <span class="ms-divider--vertical"></span>
+                          <button class="ms-btn ms-btn--text ms-btn--mini" style="color: var(--ms-text-3);">更多</button>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td><input type="checkbox" class="ms-table__checkbox"></td>
+                      <td>100007</td>
+                      <td><a class="ms-btn ms-btn--link">内容 — 数据展示</a></td>
+                      <td><span class="ms-tag ms-tag--danger"><span class="icon-dot icon-dot--danger"></span>未通过</span></td>
+                      <td>
+                        <div class="ms-table__actions">
+                          <button class="ms-btn ms-btn--text ms-btn--mini">编辑</button>
+                          <span class="ms-divider--vertical"></span>
+                          <button class="ms-btn ms-btn--text ms-btn--mini">复制</button>
+                          <span class="ms-divider--vertical"></span>
+                          <button class="ms-btn ms-btn--text ms-btn--mini" style="color: var(--ms-text-3);">更多</button>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <hr class="ms-divider">
+
+          <!-- Section 7: 标签组件 -->
+          <div class="demo-section">
+            <div class="demo-section__title">Tag 标签</div>
+            <div class="demo-row">
+              <span class="demo-label">状态标签</span>
+              <span class="ms-tag ms-tag--default"><span class="icon-dot icon-dot--default"></span>未评审</span>
+              <span class="ms-tag ms-tag--success"><span class="icon-dot icon-dot--success"></span>已通过</span>
+              <span class="ms-tag ms-tag--danger"><span class="icon-dot icon-dot--danger"></span>未通过</span>
+              <span class="ms-tag ms-tag--primary">功能用例</span>
+              <span class="ms-tag ms-tag--warning">进行中</span>
+            </div>
+          </div>
+
+          <hr class="ms-divider">
+
+          <!-- Section 8: 模块树面板 -->
+          <div class="demo-section">
+            <div class="demo-section__title">模块树 (左侧面板)</div>
+            <div style="display: flex; gap: 0; border: 1px solid var(--ms-border); border-radius: 4px; overflow: hidden; max-width: 600px;">
+              <div class="ms-tree-panel" style="width: 240px;">
+                <div class="ms-tree-panel__search">
+                  <div class="ms-input" style="width: 100%;">
+                    <input type="text" class="ms-input__inner" placeholder="请输入模块名称">
+                    <span class="ms-input__suffix">🔍</span>
+                  </div>
+                </div>
+                <div class="ms-tree-panel__header">
+                  <span>📂 全部用例 (21)</span>
+                  <div style="display: flex; gap: 4px;">
+                    <button class="ms-btn ms-btn--icon" style="width: 24px; height: 24px;" title="新建模块">✚</button>
+                  </div>
+                </div>
+                <div class="ms-tree-item">
+                  <span>未规划用例</span>
+                  <span class="ms-tree-item__count">0</span>
+                </div>
+                <div class="ms-tree-item is-active">
+                  <span>登录</span>
+                  <span class="ms-tree-item__count">4</span>
+                </div>
+                <div class="ms-tree-item">
+                  <span>▸ 内容</span>
+                  <span class="ms-tree-item__count">12</span>
+                </div>
+                <div class="ms-tree-item">
+                  <span>信息发布</span>
+                  <span class="ms-tree-item__count">3</span>
+                </div>
+                <div class="ms-tree-item">
+                  <span>机构管理</span>
+                  <span class="ms-tree-item__count">1</span>
+                </div>
+                <hr class="ms-sidebar__divider">
+                <div class="ms-tree-item" style="color: var(--ms-text-3);">
+                  <span>🗑️ 回收站</span>
+                  <span class="ms-tree-item__count">1</span>
+                </div>
+              </div>
+              <div style="flex: 1; padding: 12px; border-left: 1px solid var(--ms-border); font-size: 13px; color: var(--ms-text-3); display: flex; align-items: center; justify-content: center;">
+                ← 点击左侧模块查看用例列表
+              </div>
+            </div>
+          </div>
+
+          <hr class="ms-divider">
+
+          <!-- Section 9: 搜索输入框系列 -->
+          <div class="demo-section">
+            <div class="demo-section__title">输入框 / 搜索框</div>
+            <div class="demo-row">
+              <span class="demo-label">默认输入</span>
+              <div class="ms-input" style="width: 260px;">
+                <input type="text" class="ms-input__inner" placeholder="请输入内容">
+              </div>
+            </div>
+            <div class="demo-row">
+              <span class="demo-label">搜索输入</span>
+              <div class="ms-input" style="width: 260px;">
+                <input type="text" class="ms-input__inner" placeholder="通过 ID/名称/标签搜索">
+                <span class="ms-input__suffix">🔍</span>
+              </div>
+            </div>
+            <div class="demo-row">
+              <span class="demo-label">选择器</span>
+              <div class="ms-select" style="width: 260px;">
+                <span>请选择</span>
+                <span class="ms-select__arrow">▾</span>
+              </div>
+            </div>
+          </div>
+
+          <hr class="ms-divider">
+
+          <!-- Section 10: 分页器 -->
+          <div class="demo-section">
+            <div class="demo-section__title">分页器</div>
+            <div class="ms-pagination">
+              <span style="color: var(--ms-text-3); font-size: 13px;">共 21 条</span>
+              <button class="ms-pagination__btn" disabled>‹</button>
+              <button class="ms-pagination__btn is-active">1</button>
+              <button class="ms-pagination__btn">2</button>
+              <button class="ms-pagination__btn">3</button>
+              <button class="ms-pagination__btn">›</button>
+            </div>
+          </div>
+
+        </div><!-- /ms-content-card -->
+
+      </main>
+    </div>
+  </div>
+</body>
+</html>

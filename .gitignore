@@ -1,0 +1,39 @@
+# Dependencies
+node_modules/
+frontend/node_modules/
+
+# Build outputs
+dist/
+build/
+target/
+*.class
+
+# IDE and local tooling
+.idea/
+.trae/
+.edge-cdp-profile/
+.agents/
+.m2/
+
+# Test and runtime artifacts
+allure-results/
+allure-reports/
+backend/automation-artifacts/
+backend/data/
+data/*.db
+frontend/data/
+runtime/
+uploads/
+tmp/
+temp-skill-dir/
+
+# Local archives and packaged tools
+*.zip
+apache-maven-*/
+backend/lib/
+Microsoft/
+
+# OS/editor files
+.DS_Store
+Thumbs.db
+*.log
